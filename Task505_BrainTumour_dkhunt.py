@@ -1,3 +1,4 @@
+#%%
 from pathlib import Path
 
 import numpy as np
@@ -6,7 +7,7 @@ from utils import generate_dataset_json
 
 # from nnunet.paths import nnUNet_raw_data, preprocessing_output_dir
 # from nnunet.utilities.file_conversions import convert_2d_image_to_nifti
-
+#%%
 if __name__ == '__main__':
     """
     nnU-Net was originally built for 3D images. It is also strongest when applied to 3D segmentation problems because a 
@@ -34,16 +35,19 @@ if __name__ == '__main__':
     # this folder should have the training and testing subfolders
 
     # now start the conversion to nnU-Net:
-    task_name = 'Task502_BrainTumour'
+    task_name = 'Task505_BrainTumour'
     target_base = join(Path("../nnUNet_raw_data_base/nnUNet_raw_data"), task_name)
     target_imagesTr = join(target_base, "imagesTr")
     target_imagesTs = join(target_base, "imagesTs")
 
     # finally we can call the utility for generating a dataset.json
     generate_dataset_json(join(target_base, 'dataset.json'), target_imagesTr, target_imagesTs,
-                          ('FLAIR', 'T1w', 't1gd', 'T2w'),
+                          ('FLAIR', 'T1w', 't1gd'),
                           labels={0: 'background', 1: 'edema', 2: 'non-enhancing tumor', 3: 'enhancing tumour'},
-                          dataset_name=task_name, license='CC-BY-SA 4.0')
+                          dataset_name=task_name, license='CC-BY-SA 4.0',
+                          dataset_description="Gliomas segmentation umour and oedema in on brain images",
+                          dataset_reference="https://www.med.upenn.edu/sbia/brats2017.html",
+                          dataset_release='2.0 04/05/2018')
 
     """
     once this is completed, you can use the dataset like any other nnU-Net dataset. Note that since this is a 2D
@@ -63,4 +67,3 @@ if __name__ == '__main__':
     a different 2D dataset, you can make nnU-Net determine the postprocessing by using the
     `nnUNet_determine_postprocessing` command
     """
-

@@ -19,7 +19,7 @@ plot_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Plot_results_502/")
 for i in test_dir.glob("*.nii.gz"):
     test_img = i.name
     print(test_img)
-    for j in predicted_dir("*.nii.gz"):
+    for j in predicted_dir.glob("*.nii.gz"):
         pre_img = j.name
         if pre_img == test_img:
             first_volume = image.index_img(test_img, 1)

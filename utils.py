@@ -1,3 +1,4 @@
+
 #    Copyright 2020 Division of Medical Image Computing, German Cancer Research Center (DKFZ), Heidelberg, Germany
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,39 +12,21 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import os
+
+
 from typing import Tuple
 import numpy as np
-# from batchgenerators.utilities.file_and_folder_operations import *
-from pathlib import Path
-from batchgenerators.utilities.file_and_folder_operations import subfiles, save_json
-
-img_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task505_BrainTumour/")
-train_dir = img_dir / "imagesTr"
-test_dir = img_dir / "imagesTs"
+from batchgenerators.utilities.file_and_folder_operations import *
 
 
-def get_identifiers_from_splitted_files(folder: img_dir):
+def get_identifiers_from_splitted_files(folder: str):
     uniques = np.unique([i[:-12] for i in subfiles(folder, suffix='.nii.gz', join=False)])
     return uniques
 
 
-modalities_tuple_505 = ("FLAIR", "T1w", "t1gd", "T2w")
-labels_dict_505 = {
-    0: "background",
-    1: "edema",
-    2: "non-enhancing tumor",
-    3: "enhancing tumour"
-}
-
-
-def generate_dataset_json(output_file: img_dir, imagesTr_dir: train_dir, imagesTs_dir: test_dir,
-                          modalities: modalities_tuple_505,
-                          labels: labels_dict_505, dataset_name: "BRATS", sort_keys=True,
-                          license: str = "CC-BY-SA 4.0",
-                          dataset_description: str = "Gliomas segmentation tumour and oedema in on brain images",
-                          dataset_reference="https://www.med.upenn.edu/sbia/brats2017.html",
-                          dataset_release='2.0 04/05/2018'):
+def generate_dataset_json(output_file: str, imagesTr_dir: str, imagesTs_dir: str, modalities: Tuple,
+                          labels: dict, dataset_name: str, sort_keys=True, license: str = "hands off!", dataset_description: str = "",
+                          dataset_reference="", dataset_release='0.0'):
     """
     :param output_file: This needs to be the full path to the dataset.json you intend to write, so
     output_file='DATASET_PATH/dataset.json' where the folder DATASET_PATH points to is the one with the

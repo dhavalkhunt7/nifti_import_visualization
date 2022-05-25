@@ -93,17 +93,12 @@
 
 ##----------------------------------------------------
 #https://blog.actorsfit.com/a?ID=01600-b957e3c3-de31-4f7d-9f99-cb0a98b34a50
-
-#%%
 import nibabel as nib
 import scipy.io as io
 import os
 import numpy as np
 import tensorflow as tf
 from keras import backend as K
-
-#%%
-from nnunet.dataset_conversion.Task040_KiTS import compute_dice_scores
 
 
 def dice_coefficient(y_true, y_pred, smooth=0.00001):
@@ -112,47 +107,38 @@ def dice_coefficient(y_true, y_pred, smooth=0.00001):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth)/(K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-#%%
+
 pred_dir = '../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/prediction_files_for_dc'
 true_dir = '../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/labels'
 pred_filenames = os.listdir(pred_dir)
 pred_filenames.sort(key=lambda x:x[:-2])
 
-#%%
 true_filenames = os.listdir(true_dir)
 true_filenames.sort(key=lambda x:x[:-8])
 
-#%%
-
-dice_value = np.zeros(10)
+dice_value = np.zeros(18)
 temp = []
-for f in range(10):
+for f in range(18):
     pred_path = os.path.join(pred_dir, pred_filenames[f])
     img_pred = nib.load(pred_path)
     y_pred = img_pred.get_fdata()
     true_path = os.path.join(true_dir, true_filenames[f])
     img_true = nib.load(true_path)
     y_true = img_true.get_fdata()
-
-    temp.append(dice_coefficient(y_true, y_pred))
+    select = []
+    for slices in range(121):
+        if np.sum(y_true[:, :, slices]) > 0:
+            select.append(slices)
+            pass
+        pass
+    temp.append(dice_coefficient(y_true[:, :, select], y_pred[:, :, select]))
+    print(select)
     pass
 
 
-#%%
 with tf.Session() as sess:
     dice_value = sess.run(temp)
     pass
 
 mat_path = '../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/DICE_Lac.mat'
 io.savemat(mat_path, {'DICE_value': dice_value})
-
-
-# trying new way
-#%%
-
-pred_dir = '../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/prediction_files_for_dc'
-true_dir = '../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/labels'
-
-
-for i in range(10):
-    compute_dice_scores()

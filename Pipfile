@@ -15,6 +15,10 @@ colored = "*"
 nib = "*"
 interpol = "*"
 sns = "*"
+nipype = "*"
+keras = "*"
+backend = "*"
+tensorflow = "*"
 
 [dev-packages]
 

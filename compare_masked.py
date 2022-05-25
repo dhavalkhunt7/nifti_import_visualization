@@ -8,7 +8,7 @@ import seaborn as sns
 # %%
 import numpy as np
 
-img_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task501_BrainTumour/imagesTs/BRATS_500.nii.gz")
+img_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/images_tr_converted/BRATS_1020_0002.nii.gz")
 img1 = nib.load(img_dir)
 
 #%%
@@ -17,7 +17,8 @@ t1_data = img1.get_fdata()
 t1_data.shape
 
 #%%
-masked_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Result_502/BRATS_500.nii.gz")
+masked_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/prediction_files_for_dc"
+                   "/BRATS_1020.nii.gz")
 masked_img  = nib.load(masked_path)
 
 masked_img.get_fdata().shape
@@ -97,8 +98,8 @@ print(masked_data[134,:,:])
 
 from nilearn import plotting,image
 
-path = "../nnUNet_raw_data_base/nnUNet_raw_data/Task501_BrainTumour/imagesTs/BRATS_500.nii.gz"
-mask_path = "../nnUNet_raw_data_base/nnUNet_raw_data/Result_502/BRATS_500.nii.gz"
+path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/images_tr_converted/BRATS_1020_0002.nii.gz"
+mask_path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/prediction_files_for_dc/BRATS_1020.nii.gz"
 
 first_volume = image.index_img(path,1)
 
