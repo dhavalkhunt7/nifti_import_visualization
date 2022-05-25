@@ -5,7 +5,8 @@ from matplotlib import pyplot as plt
 from nilearn import plotting,image
 from nilearn.plotting import plot_epi, plot_stat_map
 
-path = 'input/imageT/BRATS_001.nii'
+path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/images_tr_converted/BRATS_1020_0002.nii.gz"
+mask_path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/prediction_files_for_dc/BRATS_1020.nii.gz"
 
 #plotting.plot_prob_atlas(path, display_mode='x') sagital
 #plt.show()
@@ -27,7 +28,7 @@ plt.show()
 
 #%% smoothing
 
-smoothened_img =image.smooth_img(first_volume, fwhm=3)
+smoothened_img =image.smooth_img(path, fwhm=3)
 plotting.plot_img(smoothened_img)
 plt.show()
 
@@ -38,7 +39,7 @@ mean_img = image.mean_img(fwhm_img)
 plotting.plot_epi(mean_img, cut_coords=cut_coords)
 plt.show()
 #%%
-plotting.plot_epi(first_volume)
+plotting.plot_epi(path)
 plt.show()
 
 #%%
@@ -59,7 +60,9 @@ for img in image.iter_img(path):
     plotting.plot_stat_map(img, threshold=3, display_mode="z", cut_coords=1, colorbar=True)
 plt.show()
 
-
+#%%
+plotting.plot_stat_map(path, threshold=3, display_mode="z", cut_coords=1, colorbar=True)
+plt.show()
 
 #%% visualization trail 1
 view=plotting.view_img(image.mean_img(path), threshold=None)
@@ -67,11 +70,11 @@ view.open_in_browser()
 
 
 #%% background enhancement
-plotting.plot_stat_map(first_volume, dim=1)
+plotting.plot_stat_map(path, dim=1)
 plt.show()
 
 #%%
-plotting.plot_epi(first_volume)
+plotting.plot_epi(path)
 plt.show()
 
 
@@ -99,14 +102,12 @@ from nilearn.datasets import load_mni152_template
 
 
 #%%
-mask_path = 'input/labelsT/BRATS_001.nii.gz'
 
-
-plotting.plot_roi(mask_path, bg_img=first_volume, cmap='Paired', colorbar=True)
+plotting.plot_roi(mask_path, bg_img=path, cmap='Paired', colorbar=True)
 plt.show()
 
 print(mask_path)
-
+#%%
 masked_img = image.load_img(mask_path)
 masked_data = image.get_data(masked_img)
 h_masked_data = masked_img.header
@@ -117,5 +118,5 @@ plotting.plot_img(mask_path)
 
 #%%
 
-plotting.plot_roi(masked_img, first_volume)
+plotting.plot_roi(masked_img, path)
 plt.show()
