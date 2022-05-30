@@ -26,7 +26,7 @@ masked_img.get_fdata().shape
 #%%
 plt.figure(figsize=(8, 8))
 # plt.imshow(masked_img.get_fdata()[:, :, 78], 'jet', interpolation='none')
-plt.imshow(img1.get_fdata()[:, :, 78, 1], 'gray', interpolation='none')
+plt.imshow(img1.get_fdata()[:, :, 78], interpolation='none')
 plt.show()
 
 
@@ -98,7 +98,7 @@ print(masked_data[134,:,:])
 
 from nilearn import plotting,image
 
-path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/images_tr_converted/BRATS_1020_0002.nii.gz"
+path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/images_tr/BRATS_020.nii.gz"
 mask_path = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/prediction_files_for_dc/BRATS_1020.nii.gz"
 
 first_volume = image.index_img(path,1)
