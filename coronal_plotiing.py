@@ -9,7 +9,7 @@ img_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_t
 main_img_dir_ = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/" \
                 "images_tr_converted/"
 lbl_img_dir_ = "../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing/" \
-                "labels/"
+               "labels/"
 # %%
 original_data = img_dir / "images_tr_converted"
 labels = img_dir / "labels"
@@ -54,15 +54,15 @@ def show_slices(slices):
     for i, slice in enumerate(slices):
         str_0 = "background_slice_" + str(i)
 
-        axes[i].imshow(str_0.T, origin="lower")
+        # axes[i].imshow(str_0.T, origin="lower")
         axes[i].imshow(slice.T, origin="lower")
         axes[i].axis('off')
 
 
 #
-# slice_0 = lbl_img_data[:, 75 , :]
-# slice_1 = lbl_img_data[:, 110, :]
-# slice_2 = lbl_img_data[:, 125, :]
+slice_0 = lbl_img_data[:, 75 , :]
+slice_1 = lbl_img_data[:, 110, :]
+slice_2 = lbl_img_data[:, 125, :]
 
 background_slice_0 = epi_img_data[:, 75, :]
 background_slice_1 = epi_img_data[:, 110, :]
@@ -128,7 +128,45 @@ display.add_overlay(lbl_img_dir_ + 'BRATS_1020.nii.gz', colorbar=True)
 display.savefig('output/plotting1.png')
 # plotting.show()
 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# %
+# import matplotlib.pyplot as plt
 
-#%
-import matplotlib.pyplot as plt
 import SimpleITK as sitk
+
+img1 = slice_0
+
+# sitk.Show(img1)
+
+img = sitk.GetImageFromArray(slice_0.T)
+label_img= sitk.GetImageFromArray()
+print(img.GetSize())
+
+
+# %%
+def plot(image):
+    plt.imshow(image.T, origin='lower')
+    plt.show()
+
+
+# %%
+array = sitk.GetArrayFromImage(img)
+spacing = img.GetSpacing()
+print(spacing)
+
+# %%
+plot(slice_1)
+#%%
+image = sitk.GetImageFromArray(lbl_img_data)
+plot(sitk.LabelToRGB(image))
+
+#%%
