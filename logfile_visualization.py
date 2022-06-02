@@ -287,13 +287,13 @@ fig.write_image("output/fig.png")
 
 #%% just for check
 
-f = open("../nnUNet_raw_data_base/run505_2d_for_single_gpu.txt", "r")
+f = open("../../../Downloads/run505_2d_single_gpu_31st_may.txt", "r")
 content = f.read()
 
 # %% splitting the data to get only important parts from  all text
 # taking all the important epoch related information from log file
-start = '2022-05-30 13:26:39.140124:'
-end = '2022-05-31 03:48:09.468103:'
+start = '2022-05-31 18:16:34.488127:'
+end = '2022-06-02 14:31:13.239059:'
 data = (content.split(start))[1].split(end)[0]
 
 #
@@ -307,32 +307,33 @@ print(splited_data[0])
 # making empty dictionary
 log_dict = {}
 dice_co = []
-for i in range(190):
+for i in range(583):
     log_dict[i] = {}  # making dic of dict to save all the necessary information
     # individual epoch info that we get, accessing every line one by one to extract important variables and saving it
     # into dict
     list_0 = splited_data[i].split("\n")
     # print(i)
     # print(list_0[2])
-    train = list_0[2].split("train loss : ")
+    # train = list_0[2].split("train loss : ")
     # train_loss = train[1]
-    log_dict[i]["train_loss"] = float(train[1])
+    # log_dict[i]["train_loss"] = float(train[1])
     #
-    valid = list_0[3].split("validation loss: ")
+    # valid = list_0[3].split("validation loss: ")
     # # validation_loss = valid[1]
-    log_dict[i]["validation_loss"] = float(valid[1])
+    # log_dict[i]["validation_loss"] = float(valid[1])
 
     individual_dice = []
 
     #
+    # print(list_0[4])
     dice = list_0[4].split("Average global foreground Dice: ")
-    average_global_foreground_dice = dice[1]
+    # average_global_foreground_dice = dice[1]
     dc1 = (average_global_foreground_dice.split("["))[1].split(", ")[0]
     dc2 = (average_global_foreground_dice.split(", "))[1].split(", ")[0]
     dc3 = (average_global_foreground_dice.split(", "))[2].split("]")[0]
-    log_dict[i]["dc1"] = float(dc1)
-    log_dict[i]["dc2"] = float(dc2)
-    log_dict[i]["dc3"] = float(dc3)
+    # log_dict[i]["dc1"] = float(dc1)
+    # log_dict[i]["dc2"] = float(dc2)
+    # log_dict[i]["dc3"] = float(dc3)
     individual_dice.append(float(dc1))
     individual_dice.append(float(dc2))
     individual_dice.append(float(dc3))
