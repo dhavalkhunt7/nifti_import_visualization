@@ -293,7 +293,7 @@ content = f.read()
 # %% splitting the data to get only important parts from  all text
 # taking all the important epoch related information from log file
 start = '2022-05-31 18:16:34.488127:'
-end = '2022-06-02 14:31:13.239059:'
+end = '2022-06-03 12:40:51.070943:'
 data = (content.split(start))[1].split(end)[0]
 
 #

@@ -97,7 +97,7 @@ print(size)
 
 # %%
 slices = [img_T1[size[0] // 2, :, :], img_T1[:, size[1] // 2, :], img_T1[:, :, size[2] // 2]]
-myshow(sitk.Tile(slices, [3, 1]), dpi=20)
+myshow(sitk.Tile(slices, [3, 1]))
 
 # %%
 nslices = 5
@@ -219,7 +219,7 @@ def plotfig(img):
 
     print(img_zslices[2].ndim)
 
-    fig, axis = plt.subplots(1, 3, figsize=(11, 6))
+    # fig, axis = plt.subplots(1, 3, figsize=(11, 6))
 
     # plt.figure()
     # for i in range(3):
@@ -250,23 +250,23 @@ img_zslices = [img[:, :, s] for s in slices_z]
 print(np.array(img_yslices[1]).ndim)
 
 
-def valid_imshow_data(data):
-    data = np.asarray(data)
-    if data.ndim == 2:
-        return True
-    elif data.ndim == 3:
-        if 3 <= data.shape[2] <= 4:
-            return True
-        else:
-            print('The "data" has 3 dimensions but the last dimension '
-                  'must have a length of 3 (RGB) or 4 (RGBA), not "{}".'
-                  ''.format(data.shape[2]))
-            return False
-    else:
-        print('To visualize an image the data must be 2 dimensional or '
-              '3 dimensional, not "{}".'
-              ''.format(data.ndim))
-        return False
+# def valid_imshow_data(data):
+#     data = np.asarray(data)
+#     if data.ndim == 2:
+#         return True
+#     elif data.ndim == 3:
+#         if 3 <= data.shape[2] <= 4:
+#             return True
+#         else:
+#             print('The "data" has 3 dimensions but the last dimension '
+#                   'must have a length of 3 (RGB) or 4 (RGBA), not "{}".'
+#                   ''.format(data.shape[2]))
+#             return False
+#     else:
+#         print('To visualize an image the data must be 2 dimensional or '
+#               '3 dimensional, not "{}".'
+#               ''.format(data.ndim))
+#         return False
 
 
 # valid_imshow_data(img_yslices[1])
@@ -319,3 +319,42 @@ def plotfig(img):
 
 
 plotfig(epi_img_data)
+
+
+#%%
+from skimage import io
+from skimage import color
+from skimage import segmentation
+import matplotlib.pyplot as plt
+
+#%%
+# URL for tiger image from Berkeley Segmentation Data Set BSDS
+url=('http://www.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300/html/images/plain/normal/color/108073.jpg')
+#%%
+# Load tiger image from URL
+tiger = io.imread(url)
+print(type(tiger))
+#%%
+
+# Segment image with SLIC - Simple Linear Iterative Clustering
+seg = segmentation.slic(tiger, n_segments=30, compactness=40.0, enforce_connectivity=True, sigma=3)
+
+# Generate automatic colouring from classification labels
+io.imshow(color.label2rgb(seg,tiger))
+# plt.show()
+plt.savefig("plotting3.png")
+
+
+#%%
+#get 2 array  - 1. normal input image and.. 2. segmenatation
+
+
+img_T1
+#%%
+
+img = img_T1
+slices_list = [75, 110, 125]  # for x and y
+slices_z = [38, 50, 70]
+img_xslices = [img[s, :, :] for s in slices_list]
+img_yslices = [img[:, s, :] for s in slices_list]
+img_zslices = [img[:, :, s] for s in slices_z]
