@@ -1,7 +1,7 @@
 # %% load txt file
 import numpy as np
 
-f = open("input/run1.txt", "r")
+f = open("../input/run1.txt", "r")
 content = f.read()
 
 # %% splitting the data to get only important parts from  all text
@@ -285,15 +285,15 @@ fig.write_image("output/fig.png")
 
 
 
-#%% just for check
+#%% just for check run 505 single gpu 2d logfile
 
-f = open("../../../Downloads/run505_2d_single_gpu_31st_may.txt", "r")
+f = open("../input/run505_2d_single_gpu_31st_may.txt", "r")
 content = f.read()
 
 # %% splitting the data to get only important parts from  all text
 # taking all the important epoch related information from log file
 start = '2022-05-31 18:16:34.488127:'
-end = '2022-06-03 12:40:51.070943:'
+end = '2022-06-03 21:47:31.430228:'
 data = (content.split(start))[1].split(end)[0]
 
 #
@@ -327,7 +327,7 @@ for i in range(583):
     #
     # print(list_0[4])
     dice = list_0[4].split("Average global foreground Dice: ")
-    # average_global_foreground_dice = dice[1]
+    average_global_foreground_dice = dice[1]
     dc1 = (average_global_foreground_dice.split("["))[1].split(", ")[0]
     dc2 = (average_global_foreground_dice.split(", "))[1].split(", ")[0]
     dc3 = (average_global_foreground_dice.split(", "))[2].split("]")[0]
@@ -345,7 +345,14 @@ for i in range(583):
     # epoch_time = time[1]
 
 # %%
-np.mean(dice_co)
+j = 0
+for i in range(len(dice_co)):
+    if(dice_co[i] > 0.798):
+        print(dice_co[i])
+        j +=1
+print(j)
+
+# np.mean(dice_co)
 # print(train_loss)
 # print(validation_loss)
 # print(average_global_foreground_dice)

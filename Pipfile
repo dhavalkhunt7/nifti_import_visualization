@@ -19,6 +19,8 @@ nipype = "*"
 keras = "*"
 backend = "*"
 tensorflow = "*"
+scikit-image = "*"
+batchgenerators = "*"
 
 [dev-packages]
 

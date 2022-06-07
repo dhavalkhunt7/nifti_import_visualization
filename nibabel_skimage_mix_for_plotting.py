@@ -4,9 +4,6 @@ import nibabel as nb
 import numpy as np
 import SimpleITK as sitk
 from matplotlib import pyplot as plt
-from matplotlib.pyplot import figure
-
-from logfile_visualization import list_0
 
 img_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing")
 original_data = img_dir / "images_tr_converted"
