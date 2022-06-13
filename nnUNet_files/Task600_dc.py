@@ -90,4 +90,6 @@ for i in range(len(dice_all)):
         count +=1
 
 print(count)
-print(len(dice_all))
+#%%
+print(dice_all)
+

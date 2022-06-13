@@ -1,7 +1,8 @@
 # %%
 from pathlib import Path
 import nibabel as nib
-from skimage import color
+from pyparsing import col
+from skimage import color, segmentation, img_as_float
 from matplotlib import cm
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,6 +18,9 @@ import numpy as np
 
 # %%
 # pathlib inputs
+from skimage.color import gray2rgb, rgb2gray
+from skimage.color.colorlabel import _match_label_with_color, _rgb_vector, DEFAULT_COLORS
+from skimage.measure import label
 
 img_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/main_training_data_for_testing")
 
@@ -125,3 +129,23 @@ fig, ax = plt.subplots(nrows=1, ncols=1)
 # ax.imshow(t_slices[0], cmap='gray')
 ax.imshow(output_array)
 fig.show()
+
+
+
+
+
+#%% Label 2 rgb plotting
+
+# colours = color.get_cmap('viridis', N)  # Change the string from 'viridis' to whatever you want from the above link
+
+#%%
+labels1 = segmentation.slic(label_slices[0],  n_segments = 4)
+labels1
+#%%
+plt.imshow(t_slices[0])
+plt.imshow(color.label2rgb(label_slices[0], kind='overlay', bg_label=0))
+plt.show()
+# plt.savefig("plotting3.png")
+
+
+
