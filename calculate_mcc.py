@@ -48,25 +48,36 @@ def perf_measure(y_actual, y_hat):
         if y_hat[i] == 0 and y_actual[i] != y_hat[i]:
             FN += 1
 
-    return (TP, FP, TN, FN)
+    return TP, FP, TN, FN
 
 
 # %% calculate by calling perf_measure function TP, TN, FP, FN
 TP, FP, TN, FN = perf_measure(gt_vector, pred_vector)
 
-# %% define function to calculate accuracy, precision, recall, f1score
 
-accuracy = (TP + TN) / (TP + TN + FN + FP)
-precision  = TP + (TP + FP)
-recall = TP / (TP + FN)
-f1score = 2 * (precision * recall) / (precision + recall)
+# %% define function to calculate accuracy, precision, recall, f1score, sensitivity, specificity,
+# false omission rate
+def calculate_all_terms(TP, FP, TN, FN):
+    accuracy = (TP + TN) / (TP + TN + FN + FP)
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f1score = 2 * (precision * recall) / (precision + recall)
+    sensitivity = TP / (TP + FN)
+    specificity = TN / (TN + FP)
+    false_omission_rate = FN / (FN + TN)
 
-# %% define function to calculate sensitivity, specificity
+    return accuracy, precision, recall, f1score, sensitivity, specificity, false_omission_rate
 
-sensitivity = TP / (TP + FN)
-specificity = TN / (TN + FP)
 
-# %% define function to calculate  false omission rate, Area under Curve
+# %%
+accuracy, precision, recall, f1score, sensitivity, specificity, false_omission_rate = calculate_all_terms(TP, FP, TN,
+                                                                                                          FN)
 
-false_omission_rate = FN / (FN + TN)
-auc = roc_auc_score(gt_vector, pred_vector)
+#%%
+precision
+
+# %% define function to calculate  , Area under Curve
+def calculate_auc(gt_vector, pred_vector):
+    auc = roc_auc_score(gt_vector, pred_vector)
+
+    return auc
