@@ -1,6 +1,8 @@
 # %%
 from pathlib import Path
 import nibabel as nb
+from rdflib.tools.csv2rdf import column
+
 import calculate_mcc
 from sklearn.metrics import matthews_corrcoef
 import pandas as pd
@@ -91,8 +93,18 @@ for i in gt_dir.glob("*.nii.gz"):
         auc = calculate_mcc.calculate_auc(gt_array, pred_array)
         log_dict_3d[new_name]["auc"] = auc
 
-#%%
+# %%
 df_3d = pd.DataFrame.from_dict(log_dict_3d).T
 
 # %%
 df_3d.to_csv('boxplot_calculation_3d.csv')
+
+# %%
+import matplotlib.pyplot as plt
+
+boxplot = df.boxplot(column=['accuracy'])
+plt.show()
+
+
+
+#%% save dataframe to csv
