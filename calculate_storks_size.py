@@ -29,7 +29,7 @@ for i in data_24h.glob("*"):
 
         pred_array = gt_img.ravel()
         total_values = pd.value_counts(pred_array)
-        stroke_size = (total_values[1] / total_values[0]) * 100
+        stroke_size = (total_values[1] / (total_values[0] + total_values[1])) * 100
         print(i.name + " : " + str(stroke_size))  # in percentage
 
         if rat_label in therapy_list:
