@@ -150,3 +150,6 @@ for i in theranostics_data.glob("*"):
             label_name = j.name + ".gz"
             nb.save(img, updated_path + "/" + label_name)
 
+
+
+#%%
