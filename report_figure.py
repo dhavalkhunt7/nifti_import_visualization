@@ -244,3 +244,4 @@ fig.write_image("output/610_dice_auc.pdf")
 # fig.update_layout(xaxis_title="model", yaxis_title="dice range", title="dice comparison")
 # fig.show()
 # fig.write_image("output/625_all3.pdf")
+
