@@ -167,7 +167,7 @@ def sort_theranostics_data(img ,target_database, count_small, threshold, new_nam
 count_small = 0
 count_big = 0
 
-for i in control_folder.glob("*"):
+for i in theranoctics_folder.glob("*"):
     # print(i.name)
     new_dir = i
     target_database = str(database_folder).replace("christine_theranostics_data_folder", "Task615_ControlTherapy")
@@ -183,16 +183,16 @@ for i in control_folder.glob("*"):
             for k in new_dir_2.glob("*"):
                 print(k.name)
                 img = nib.load(k)
-                sort_files(img, target_database, count_small, 6, new_name)
-                # sort_theranostics_data(img, target_database, count_small, 12, new_name)
+                # sort_files(img, target_database, count_small, 6, new_name)
+                sort_theranostics_data(img, target_database, count_small, 12, new_name)
             count_small += 1
 
         elif i.name == "big_strokes_data":
             for k in new_dir_2.glob("*"):
                 print(k.name)
                 img = nib.load(k)
-                sort_files(img, target_database, count_big, 5, new_name)
-                # sort_theranostics_data(img, target_database, count_big, 11, new_name)
+                # sort_files(img, target_database, count_big, 5, new_name)
+                sort_theranostics_data(img, target_database, count_big, 11, new_name)
             count_big += 1
 
 
