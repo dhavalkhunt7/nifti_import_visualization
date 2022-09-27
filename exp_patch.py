@@ -166,7 +166,6 @@ import matplotlib.pyplot as plt
 
 for i in range(len(split_tiles)):
     plt.imshow(split_tiles[i])
-<<<<<<< HEAD
     plt.show()
 
 
@@ -176,7 +175,3 @@ img = a[:, :, 74]
 #%%
 
 base_folder  = 'input/a.jpeg'
-
-=======
-    plt.show()
->>>>>>> origin/master
