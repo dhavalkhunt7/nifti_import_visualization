@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # this folder should have the training and testing subfolders
 
     # now start the conversion to nnU-Net:
-    task_name = 'Task630_Patch_3d_Rat24h'
+    task_name = 'Task632_Patch'
     target_base = join(Path("../nnUNet_raw_data_base/nnUNet_raw_data"), task_name)
     target_imagesTr = join(target_base, "imagesTr")
     target_imagesTs = join(target_base, "imagesTs")
