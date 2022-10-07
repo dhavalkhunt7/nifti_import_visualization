@@ -7,8 +7,8 @@ import os
 import patchify as patchify
 
 # %% import data from Documents/data/adrian_data
-input_folder = Path("../../../Documents/data/adrian_data/Rats24h")
-output_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task630_Patch_2d_Rat24h/"
+input_folder = Path("../../../Documents/data/adrian_data/Human")
+output_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Human_Patch_testing/"
 
 
 # %% write a function to create patches and append them to a list
@@ -33,7 +33,7 @@ def create_patches(img):
 # %% save the patches in a folder as .nii.gz
 def save_patches(patch_list_whole_img, destination_folder, file_type, counter):
     # if type is t2 or adc then output_folder is output_folder/imagesTs
-    if counter < 37:
+    if counter < 50:
         if file_type == "t2" or file_type == "adc":
             destination_folder = destination_folder + "/imagesTr"
         elif file_type == "seg":
@@ -76,23 +76,6 @@ def create_and_save_patches(input_file, output, type_file, tally):
     save_patches(list_patches, output, type_file, tally)
 
 
-# %% trail run
-folder = input_folder / "Rat081-24h"
-output_fold = "patch_data/"
-new_dir_name = "Rat081"
-for i in folder.glob("*.nii"):
-    if "Masked_ADC" in i.name:
-        adc_file = i
-        create_and_save_patches(adc_file, output_fold, "adc", 1)
-
-    elif "Masked_T2" in i.name:
-        t2_file = i
-        create_and_save_patches(t2_file, output_fold, "t2", 1)
-
-    elif "GroundTruth24h" in i.name:
-        gt_file = i
-        create_and_save_patches(gt_file, output_fold, "seg", 1)
-
 # %% perfect run
 count = 1
 for i in input_folder.glob("*"):
@@ -106,12 +89,13 @@ for i in input_folder.glob("*"):
             adc_file = j
             create_and_save_patches(adc_file, output_folder, "adc", count)
 
-        elif "Masked_T2" in j.name:
+        elif "T2_norm" in j.name:
             t2_file = j
             create_and_save_patches(t2_file, output_folder, "t2", count)
 
-        elif "GroundTruth24h" in j.name:
+        elif "GroundTrouth" in j.name:
             gt_file = j
+            print(j.name)
             create_and_save_patches(gt_file, output_folder, "seg", count)
 
     count += 1
@@ -119,7 +103,8 @@ for i in input_folder.glob("*"):
 # %%
 file_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task630_Patch_3d_Rat24h/")
 
-#%%
+
+# %%
 def delete_files(file_path, file_name):
     file_imagesTr = file_path / "imagesTr"
     file_labelsTr = file_path / "labelsTr"
@@ -170,10 +155,10 @@ target_folder = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task632_Patch")
 for i in target_folder.glob("*"):
     print(i)
 
-#%%
+# %%
 
 
-#%% check if the label has both classes
+# %% check if the label has both classes
 imagesTs = target_folder / "imagesTs"
 labelsTs = target_folder / "labelsTs"
 count = 0
@@ -192,16 +177,16 @@ for i in labelsTs.glob("*.nii.gz"):
     # print(np.unique(input_image_array))
 print(count)
 
-#%%
+# %%
 print(list_of_empty_files)
 print(len(list_of_empty_files))
 
-#%% if i in the list of empty files then delete the file from the imagesTr and labelsTr
+# %% if i in the list of empty files then delete the file from the imagesTr and labelsTr
 count = 0
-#print(len(list_of_empty_files))
+# print(len(list_of_empty_files))
 
 for i in imagesTs.glob("*.nii.gz"):
-    #print(i.name)
+    # print(i.name)
     new_name = i.name.split("_000")[0]
     print(new_name)
     if new_name in list_of_empty_files:
@@ -209,10 +194,10 @@ for i in imagesTs.glob("*.nii.gz"):
         os.remove(i)
         count += 1
 
-#%%
+# %%
 count = 0
 for k in labelsTs.glob("*.nii.gz"):
-    #print(k.name)
+    # print(k.name)
     new_name = k.name.replace(".nii.gz", "")
     print(new_name)
     if new_name in list_of_empty_files:
@@ -221,15 +206,13 @@ for k in labelsTs.glob("*.nii.gz"):
         count += 1
 print(count)
 
-#%%
+# %%
 print(count)
 
-#%% compare list of empty files with list_data_points
+# %% compare list of empty files with list_data_points
 print(list_of_empty_files == list_data_points)
 
-
-
-#%% creating patches using patchify
+# %% creating patches using patchify
 
 
 patches = patchify.patchify(data_input, (31, 31, 31), step=15)
