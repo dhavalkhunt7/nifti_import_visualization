@@ -11,6 +11,10 @@ input_folder = Path("../../../Documents/data/adrian_data/Rats24h")
 output_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task630_Patch_2d_Rat24h/"
 
 
+#%% print current working directory
+print(os.getcwd())
+print("start")
+
 # %% write a function to create patches and append them to a list
 def create_patches(img):
     patches_1 = patchify.patchify(img, (45, 45, 45), step=15)
@@ -77,21 +81,21 @@ def create_and_save_patches(input_file, output, type_file, tally):
 
 
 # %% trail run
-folder = input_folder / "Rat081-24h"
+folder = input_folder / "Rat085-24h"
 output_fold = "patch_data/"
 new_dir_name = "Rat081"
 for i in folder.glob("*.nii"):
     if "Masked_ADC" in i.name:
         adc_file = i
-        create_and_save_patches(adc_file, output_fold, "adc", 1)
+        create_and_save_patches(adc_file, output_fold, "adc", 41)
 
     elif "Masked_T2" in i.name:
         t2_file = i
-        create_and_save_patches(t2_file, output_fold, "t2", 1)
+        create_and_save_patches(t2_file, output_fold, "t2", 41)
 
     elif "GroundTruth24h" in i.name:
         gt_file = i
-        create_and_save_patches(gt_file, output_fold, "seg", 1)
+        create_and_save_patches(gt_file, output_fold, "seg", 41)
 
 # %% perfect run
 count = 1
@@ -171,14 +175,11 @@ for i in target_folder.glob("*"):
     print(i)
 
 #%%
-
-
-#%% check if the label has both classes
-imagesTs = target_folder / "imagesTs"
-labelsTs = target_folder / "labelsTs"
+imagesTr = target_folder / "imagesTr"
+labelsTr = target_folder / "labelsTr"
 count = 0
 list_of_empty_files = []
-for i in labelsTs.glob("*.nii.gz"):
+for i in imagesTr.glob("*.nii.gz"):
     load_nifti = nib.load(i)
     input_image_array = np.array(load_nifti.dataobj)
 
@@ -187,42 +188,16 @@ for i in labelsTs.glob("*.nii.gz"):
         print(i.name)
         count += 1
         # append all the files that have only one unique value to a list
-        new_name = i.name.replace(".nii.gz", "")
-        list_of_empty_files.append(new_name)
+        list_of_empty_files.append(i.name.split("_000")[0])
     # print(np.unique(input_image_array))
 print(count)
 
 #%%
 print(list_of_empty_files)
-print(len(list_of_empty_files))
-
-#%% if i in the list of empty files then delete the file from the imagesTr and labelsTr
-count = 0
-#print(len(list_of_empty_files))
-
-for i in imagesTs.glob("*.nii.gz"):
-    #print(i.name)
-    new_name = i.name.split("_000")[0]
-    print(new_name)
-    if new_name in list_of_empty_files:
-        print(i.name)
-        os.remove(i)
-        count += 1
 
 #%%
-count = 0
-for k in labelsTs.glob("*.nii.gz"):
-    #print(k.name)
-    new_name = k.name.replace(".nii.gz", "")
-    print(new_name)
-    if new_name in list_of_empty_files:
-        print(k.name)
-        os.remove(k)
-        count += 1
-print(count)
-
-#%%
-print(count)
+for i in list_of_empty_files:
+    delete_files(target_folder, i)
 
 #%% compare list of empty files with list_data_points
 print(list_of_empty_files == list_data_points)

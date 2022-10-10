@@ -7,8 +7,8 @@ import patchify as patchify
 import matplotlib.pyplot as plt
 
 # %% get data from imagesTr
-dataset_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/results")
-output_path = "../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/rat_reconstructed"
+dataset_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/labelsTs")
+output_path = "../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/labels_reconstructed"
 
 
 # %% create a function to process all the data using dictionary
@@ -37,6 +37,9 @@ for i in dataset_path.glob("*.nii.gz"):
 
 # %% dict to dataframe
 df = pd.DataFrame(data_dict)
+
+#%% sort the dataframe by index
+df = df.sort_index()
 
 
 # %% create a function for upper code

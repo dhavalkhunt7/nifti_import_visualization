@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # this folder should have the training and testing subfolders
 
     # now start the conversion to nnU-Net:
-    task_name = 'Task632_Patch'
+    task_name = 'Task646_combined_patch'
     target_base = join(Path("../nnUNet_raw_data_base/nnUNet_raw_data"), task_name)
     target_imagesTr = join(target_base, "imagesTr")
     target_imagesTs = join(target_base, "imagesTs")
@@ -46,8 +46,8 @@ if __name__ == '__main__':
                           ('Masked_ADC', 'Masked_T2'),
                           labels={0: 'background', 1: 'stroke'},
                           dataset_name=task_name, license='-',
-                          dataset_description="stroke segmentation on rat MRI images, using 70:30 train test ratio, "
-                                              "for human testing purpose",
+                          dataset_description="stroke segmentation on rat and human MRI images combined using 70:30 "
+                                              "train test ratio.",
                           dataset_reference="-",
                           dataset_release='-')
 
