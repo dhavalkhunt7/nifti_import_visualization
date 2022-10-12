@@ -6,8 +6,28 @@ import nibabel as nib
 import numpy as np
 
 #%%
-input_folder = Path("../../../Documents/data/adrian_data/Rats24h")
-output_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task641_combined_nifti/"
+input_database = "../../Documents/WSIC/data WSIC/Rats24h"
+output_database = "../../Documents/WSIC/data WSIC/Trail_task"
+
+
+#%% import the ground truth from the nifti_store
+gt_path =  Path("nifti_store/GroundTruth24h.nii")
+output_path = 'nifti_store'
+print(type(output_path))
+#%%
+gt_nifti = nib.load(gt_path)
+print("gt_nifti shape: ", gt_nifti.shape)
+gt_data = np.array(gt_nifti.dataobj)
+gt_data[gt_data != 0] = 0
+print(np.unique(gt_data))
+#%%
+nii_file = nib.Nifti1Image(gt_data, np.eye(4))
+
+
+#%%
+nib.save(nii_file, output_path + '/GroundTruth24h_modified.nii')
+nib.save(gt_nifti, output_path + '/GroundTruth24h_normal.nii')
+#%% save
 
 
 #%% get and save the main nifti files
@@ -26,26 +46,12 @@ def get_and_save_nifti(input_file, destination_folder, file_type, counter):
 
     load_nifti = nib.load(input_file)
 
-#    if file_type == "seg":
- #       seg_data = np.array(load_nifti.dataobj)
-  #      seg_data[seg_data != 0] = 0
-   #     nii_file = nib.Nifti1Image(seg_data, np.eye(4))
-    #else:
-     #   data = np.array(load_nifti.dataobj)
-      #  nii_file = nib.Nifti1Image(data, np.eye(4))
-
-    #if count is between 0 to 5 then label is 0
-    if counter < 1 and file_type == "seg":
-        seg_data = np.array(load_nifti.dataobj)
+    if file_type == "seg":
+        seg_data = load_nifti.get_fdata()
         seg_data[seg_data != 0] = 0
         nii_file = nib.Nifti1Image(seg_data, np.eye(4))
     else:
-        data = np.array(load_nifti.dataobj)
-        nii_file = nib.Nifti1Image(data, np.eye(4))
-
-
-    #data = load_nifti.get_fdata()
-    #nii_file = nib.Nifti1Image(data, np.eye(4))
+        nii_file = load_nifti
 
     if file_type == "t2":
         new_name = new_dir_name + '_0001' + '.nii.gz'
@@ -57,21 +63,25 @@ def get_and_save_nifti(input_file, destination_folder, file_type, counter):
 
     if not os.path.exists(destination_folder):
         os.makedirs(destination_folder)
-    nib.save(nii_file, destination_folder + '/' + new_name)
+    file_name  = destination_folder + '/' + new_name
+    # print(type(file_name))
+    nib.save(nii_file, file_name)
     print(new_dir_name + " " + file_type + ' saved')
 
 
-#%%import data using Pathlib)
+#%%import data using Pathlib
+input_folder = Path(input_database)
 count = 0
 for file in input_folder.iterdir():
     new_dir = file
     new_dir_name = new_dir.name.replace("-24h", "")
+    print(type(new_dir_name))
 
     for i in new_dir.glob("*.nii"):
         if i.name == "Masked_ADC.nii":
-            get_and_save_nifti(i, output_folder, "adc", count)
+            get_and_save_nifti(i, str(output_database), "adc", count)
         elif i.name == "Masked_T2.nii":
-            get_and_save_nifti(i, output_folder, "t2", count)
+            get_and_save_nifti(i, str(output_database), "t2", count)
         elif i.name == "GroundTruth24h.nii":
-            get_and_save_nifti(i, output_folder, "seg", count)
+            get_and_save_nifti(i, str(output_database), "seg", count)
     count += 1
