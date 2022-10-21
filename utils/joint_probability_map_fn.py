@@ -55,18 +55,18 @@ def plot_subplots(image, mask_img, n_rows, n_cols):
     fig, ax = plt.subplots(n_rows, n_cols, figsize=(150, 50))
 
     n = 0
-    slice_no = 60
+    slice_no = 55
     for _ in range(n_rows):
         for _ in range(n_cols):
             ax[n].imshow(image[:, :, slice_no], cmap='gray')
-            ax[n].imshow(mask_img[:, :, slice_no], cmap='hot', alpha=0.7)
+            ax[n].imshow(mask_img[:, :, slice_no], cmap='hot', alpha=0.7, vmin=0, vmax=1)
             ax[n].set_xticks([])
             ax[n].set_yticks([])
             # hider border of subplot
             ax[n].set_frame_on(False)
             ax[n].set_title('Slice {}'.format(slice_no), color='r', fontsize=5)
             n += 1
-            slice_no += 5
+            slice_no += 8
     fig.subplots_adjust(wspace=0, hspace=0)
     # plt.show()
     return fig
@@ -78,7 +78,7 @@ def plot_subplots_single_modality(image, n_rows, n_cols):
     fig, ax = plt.subplots(n_rows, n_cols, figsize=(150, 50))
 
     n = 0
-    slice_no = 60
+    slice_no = 55
     for _ in range(n_rows):
         for _ in range(n_cols):
             ax[n].imshow(image[:, :, slice_no], cmap='gray')
@@ -88,14 +88,14 @@ def plot_subplots_single_modality(image, n_rows, n_cols):
             ax[n].set_frame_on(False)
             ax[n].set_title('Slice {}'.format(slice_no), color='r', fontsize=5)
             n += 1
-            slice_no += 5
+            slice_no += 8
     fig.subplots_adjust(wspace=0, hspace=0)
     # plt.show()
     return fig
 
 
 # %%
-task = database / "Rats1m"
+task = database / "Rats72h"
 
 # %%
 therapy_t2, therapy_adc, therapy_gt = get_data_jpm_plotting(task, "therapy")
@@ -109,13 +109,21 @@ if np.isnan(therapy_adc).any():
 if np.isnan(therapy_gt).any():
     therapy_gt[np.isnan(therapy_gt)] = 0
 
+# %% code 1
+therapy_t2 = therapy_t2[15:75, 5:87, :]
+therapy_adc = therapy_adc[15:75, 5:87, :]
+therapy_gt = therapy_gt[15:75, 5:87, :]
+# mirror the data
+therapy_t2 = np.flip(therapy_t2, axis=1)
+therapy_adc = np.flip(therapy_adc, axis=1)
+therapy_gt = np.flip(therapy_gt, axis=1)
 
 # %% plot the subplots of the t2 therapy data and the mask data same for the adc data
-plt_t2_gt = plot_subplots(therapy_t2, therapy_gt, 1, 7)
-plt_adc_gt = plot_subplots(therapy_adc, therapy_gt, 1, 7)
+plt_t2_gt = plot_subplots(therapy_t2, therapy_gt, 1, 5)
+plt_adc_gt = plot_subplots(therapy_adc, therapy_gt, 1, 5)
 
 # %% folder to save the plots
-plot_path = "abcd/" + task.name
+plot_path = "new_plots/" + task.name
 # craete a folder if it does not exist
 if not Path(plot_path).exists():
     Path(plot_path).mkdir()
@@ -124,16 +132,15 @@ if not Path(plot_path).exists():
 plt_t2_gt.savefig(plot_path + "/therapy_t2_gt.pdf", bbox_inches="tight", dpi=300)
 plt_adc_gt.savefig(plot_path + "/therapy_adc_gt.pdf", bbox_inches="tight", dpi=300)
 
-
 # %% plot only adc and ony t2
-plt_t2 = plot_subplots_single_modality(therapy_t2, 1, 7)
-plt_adc = plot_subplots_single_modality(therapy_adc, 1, 7)
+plt_t2 = plot_subplots_single_modality(therapy_t2, 1, 5)
+plt_adc = plot_subplots_single_modality(therapy_adc, 1, 5)
 
 # %% save the figure
 plt_t2.savefig(plot_path + "/therapy_t2.pdf", bbox_inches="tight", dpi=300)
 plt_adc.savefig(plot_path + "/therapy_adc.pdf", bbox_inches="tight", dpi=300)
 
-#%% re-run the code for the control data
+# %% re-run the code for the control data
 control_t2, control_adc, control_gt = get_data_jpm_plotting(task, "control")
 
 # %%
@@ -145,18 +152,31 @@ if np.isnan(control_adc).any():
 if np.isnan(control_gt).any():
     control_gt[np.isnan(control_gt)] = 0
 
+# %% code 1
+control_t2 = control_t2[15:75, 5:87, :]
+control_adc = control_adc[15:75, 5:87, :]
+control_gt = control_gt[15:75, 5:87, :]
+# mirror the data
+control_t2 = np.flip(control_t2, axis=1)
+control_adc = np.flip(control_adc, axis=1)
+control_gt = np.flip(control_gt, axis=1)
+
 # %% plot the subplots of the t2 therapy data and the mask data same for the adc data
-plt_t2_gt = plot_subplots(control_t2, control_gt, 1, 7)
-plt_adc_gt = plot_subplots(control_adc, control_gt, 1, 7)
+plt_t2_gt = plot_subplots(control_t2, control_gt, 1, 5)
+plt_adc_gt = plot_subplots(control_adc, control_gt, 1, 5)
 
 # %% save the figure
 plt_t2_gt.savefig(plot_path + "/control_t2_gt.pdf", bbox_inches="tight", dpi=300)
 plt_adc_gt.savefig(plot_path + "/control_adc_gt.pdf", bbox_inches="tight", dpi=300)
 
 # %% plot only adc and ony t2
-plt_t2 = plot_subplots_single_modality(control_t2, 1, 7)
-plt_adc = plot_subplots_single_modality(control_adc, 1, 7)
+plt_t2 = plot_subplots_single_modality(control_t2, 1, 5)
+plt_adc = plot_subplots_single_modality(control_adc, 1, 5)
 
 # %% save the figure
 plt_t2.savefig(plot_path + "/control_t2.pdf", bbox_inches="tight", dpi=300)
 plt_adc.savefig(plot_path + "/control_adc.pdf", bbox_inches="tight", dpi=300)
+#
+# #%% plot t2 and gt from therapy data
+# plt.imshow(therapy_t2[:, :, 78], cmap='gray')
+# plt.show()
