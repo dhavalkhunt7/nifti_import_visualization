@@ -7,14 +7,27 @@ import patchify as patchify
 import matplotlib.pyplot as plt
 
 # %% get data from imagesTr
-dataset_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/labelsTs")
-output_path = "../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/labels_reconstructed"
+dataset_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/Human_Patch_testing/result_human")
+output_path = "../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/Human_Patch_testing/result_reconstructed"
 
+
+# #%%
+#
+# data = nib.load("../nnUNet_raw_data_base/nnUNet_raw_data/Task646_combined_patch/labels_reconstructed/Human07.nii.gz
+# ").get_fdata() data.shape
+#
+#
+# # %%
+# patches_1 = patchify.patchify(data, (45, 45, 45), step=15)
+# patches_1.shape
+# #%%
+# final_patch = patches_1.reshape(-1, 45, 45, 45)
+# final_patch.shape
 
 # %% create a function to process all the data using dictionary
 def process_all_data(file):
     main_name = i.name.split("_")[0]
-    # if main name doesnot exist in dictionary then create a new key
+    # if main name doesn't exist in dictionary then create a new key
     if main_name not in data_dict:
         data_dict[main_name] = {}
         print("dict created: %s" % main_name)
@@ -22,6 +35,8 @@ def process_all_data(file):
     get_patch = i.name.split("_")[1].split(".")[0]
     # if get_patch_no has one character then add 0 as prefix
     if len(get_patch) == 1:
+        get_patch = "00" + get_patch
+    elif len(get_patch) == 2:
         get_patch = "0" + get_patch
     # add the patch number to the dictionary
     data_dict[main_name][get_patch] = i
@@ -38,7 +53,7 @@ for i in dataset_path.glob("*.nii.gz"):
 # %% dict to dataframe
 df = pd.DataFrame(data_dict)
 
-#%% sort the dataframe by index
+# %% sort the dataframe by index
 df = df.sort_index()
 
 
@@ -53,10 +68,12 @@ def get_data_from_nifti(file_list):
 
 
 # %% create a function for whole process
-def reconstruct_patches(patches_list,):
+def reconstruct_patches(patches_list, ):
     patches = np.array(patches_list)
-    patches_reshaped = patches.reshape(4, 4, 6, 45, 45, 45)
-    reconstructed_data = patchify.unpatchify(patches_reshaped, (90, 90, 120))
+    # patches_reshaped = patches.reshape(4, 4, 6, 45, 45, 45)
+    patches_reshaped = patches.reshape(6, 7, 6, 45, 45, 45)
+    # reconstructed_data = patchify.unpatchify(patches_reshaped, (90, 90, 120))
+    reconstructed_data = patchify.unpatchify(patches_reshaped, (120, 135, 120))
     return reconstructed_data
 
 
