@@ -1,198 +1,185 @@
-# Disable Toolbar for plots
-import os
-import sys
+# %% managing imports
 from pathlib import Path
+import nibabel as nib
 import numpy as np
-from matplotlib import pyplot as plt
-import nibabel as nb
+import os
 
-plt.rcParams['toolbar'] = 'None'
+import patchify as patchify
 
-# Set rounding
-np.set_printoptions(formatter={'float': lambda x: "{0:0.2f}".format(x)})
+# %% import data from Documents/data/adrian_data
 
-
-
-### IMPORT DATA ###
-# Load data
-image=nb.load('input/imageT/BRATS_001.nii.gz')
-
-# 3D data
-if image.header['dim'][0]==3:
-    data=image.get_data()
-    # 4D data
-elif  image.header['dim'][0]==4:
-    data=image.get_data()[:,:,:,0]
-
-# Header
-header=image.header
-
-# Set NAN to 0
-data[np.isnan(data)] = 0
+input_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/temp_data"
+output_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/images_trail"
 
 
+# %% write a function to create patches and append them to a list
+def create_patches(img):
+    # create patches of 45*45*45 with stride 15
+    patches_1 = patchify.patchify(img, (45, 45, 45), step=15)
+    final_patch = patches_1.reshape(-1, 45, 45, 45)
 
-### PREPARE SOME PARAMETERS ###
-
-# Spacing for Aspect Ratio
-sX=header['pixdim'][1]
-sY=header['pixdim'][2]
-sZ=header['pixdim'][3]
-
-# Size per slice
-lX = data.shape[0]
-lY = data.shape[1]
-lZ = data.shape[2]
-
-# Middle slice number
-mX = int(lX/2)
-mY = int(lY/2)
-mZ = int(lZ/2)
-
-# True middle point
-tmX = lX/2.0
-tmY = lY/2.0
-tmZ = lZ/2.0
+    # extract the patches in 3d shape and save it in a list
+    list_patches = []
+    for z in range(final_patch.shape[0]):
+        list_patches.append(final_patch[z, :, :, :])
+    return list_patches
 
 
+# %% save the patches in a folder as .nii.gz  for human data
+def save_patches(patch_list_whole_img, destination_folder, file_type, counter):
+    # if type is t2 or adc then output_folder is output_folder/imagesTs
+    if counter < 24:
+        if file_type == "t2" or file_type == "adc":
+            destination_folder = destination_folder + "/imagesTr"
+        elif file_type == "seg":
+            destination_folder = destination_folder + "/labelsTr"
+    else:
+        if file_type == "t2" or file_type == "adc":
+            destination_folder = destination_folder + "/imagesTs"
+        elif file_type == "seg":
+            destination_folder = destination_folder + "/labelsTs"
 
-### ORIENTATION ###
-qfX = image.get_qform()[0,0]
-sfX = image.get_sform()[0,0]
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+    for element in range(len(patch_list_whole_img)):
+        patch = patch_list_whole_img[element]
+        nii_file = nib.Nifti1Image(patch, np.eye(4))
+        # length of element is 1 then add 00 before the element, if length is 2 then add 0 before the element else
+        # add nothing
+        if len(str(element)) == 1:
+            element_no = "00" + str(element)
+        elif len(str(element)) == 2:
+            element_no = "0" + str(element)
+        else:
+            element_no = str(element)
 
-if qfX < 0 and (sfX == 0 or sfX < 0):
-    oL = 'R'
-    oR = 'L'
-elif qfX > 0 and (sfX == 0 or sfX > 0):
-    oL = 'L'
-    oR = 'R'
-if sfX < 0 and (qfX == 0 or qfX < 0):
-    oL = 'R'
-    oR = 'L'
-elif sfX > 0 and (qfX == 0 or qfX > 0):
-    oL = 'L'
-    oR = 'R'
-
-
-
-### PLOTTING ###
-
-# Plot main window
-fig = plt.figure(
-    facecolor='black',
-    figsize=(5,4),
-    dpi=1000
-)
-
-# Black background
-plt.style.use('dark_background')
-
-# Coronal
-ax1=fig.add_subplot(2,2,1)
-imgplot = plt.imshow(
-    np.rot90(data[:,mY,:]),
-    aspect=sZ/sX,
-)
-imgplot.set_cmap('gray')
-
-ax1.hlines(tmZ, 0, lX, colors='red', linestyles='dotted', linewidth=.5)
-ax1.vlines(tmX, 0, lZ, colors='red', linestyles='dotted', linewidth=.5)
-
-plt.axis('off')
+        if file_type == "t2":
+            file_name = new_dir_name + '_' + element_no + '_0001' + '.nii.gz'
+        elif file_type == "adc":
+            file_name = new_dir_name + '_' + element_no + '_0000' + '.nii.gz'
+        elif file_type == "seg":
+            file_name = new_dir_name + '_' + element_no + '.nii.gz'
+        nib.save(nii_file, destination_folder + '/' + file_name)
+    print(new_dir_name + " " + file_type + ' saved')
 
 
-# Sagittal
-ax2=fig.add_subplot(2,2,2)
-imgplot = plt.imshow(
-    np.rot90(data[mX,:,:]),
-    aspect=sZ/sY,
-)
-imgplot.set_cmap('gray')
+# %%
+def whole_process(input_file, output, type_file, tally):
+    nifti_file = nib.load(input_file)
+    image_array = np.array(nifti_file.dataobj)
 
-ax2.hlines(tmZ, 0, lY, colors='red', linestyles='dotted', linewidth=.5)
-ax2.vlines(tmY, 0, lZ, colors='red', linestyles='dotted', linewidth=.5)
+    # if input_image_array has nan values then change it to 0
+    if np.isnan(image_array).any():
+        image_array[np.isnan(image_array)] = 0
 
-plt.axis('off')
+    print(np.isnan(image_array).any())
 
-
-# Axial
-ax3=fig.add_subplot(2,2,3)
-imgplot = plt.imshow(
-    np.rot90(data[:,:,mZ]),
-    aspect=sY/sX
-)
-imgplot.set_cmap('gray')
-
-ax3.hlines(tmY, 0, lX, colors='red', linestyles='dotted', linewidth=.5)
-ax3.vlines(tmX, 0, lY, colors='red', linestyles='dotted', linewidth=.5)
-
-plt.axis('off')
-
-plt.text(-10, mY+5, oL, fontsize=9, color='red') # Label on left side
+    list_patches = create_patches(image_array)
+    save_patches(list_patches, output, type_file, tally)
 
 
-# Textual information
-# sform code
-sform=np.round(image.get_sform(),decimals=2)
-sform_txt=str(sform).replace('[',' ').replace(']',' ').replace(' ','   ').replace('   -','  -')
+# %% for rat data training and testing folder
+def saving_patches(patch_list_whole_img, destination_folder, file_type, folder_type):
+    # if type is t2 or adc then output_folder is output_folder/imagesTs
+    if folder_type == "train":
+        if file_type == "t2" or file_type == "adc":
+            destination_folder = destination_folder + "/imagesTr"
+        elif file_type == "seg":
+            destination_folder = destination_folder + "/labelsTr"
+    elif folder_type == "test":
+        if file_type == "t2" or file_type == "adc":
+            destination_folder = destination_folder + "/imagesTs"
+        elif file_type == "seg":
+            destination_folder = destination_folder + "/labelsTs"
 
-# qform code
-qform=np.round(image.get_qform(),decimals=2)
-qform_txt=str(qform).replace('[',' ').replace(']',' ').replace(' ','   ').replace('   -','  -')
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+    for element in range(len(patch_list_whole_img)):
+        patch = patch_list_whole_img[element]
+        nii_file = nib.Nifti1Image(patch, np.eye(4))
+        # length of element is 1 then add 00 before the element, if length is 2 then add 0 before the element else
+        # add nothing
+        if len(str(element)) == 1:
+            element_no = "00" + str(element)
+        elif len(str(element)) == 2:
+            element_no = "0" + str(element)
+        else:
+            element_no = str(element)
 
-# Dimensions
-dims=str(data.shape).replace(', ',' x ').replace('(','').replace(')','')
-dim=("Dimensions: "+dims)
+        if file_type == "t2":
+            new_name = new_dir_name + '_' + element_no + '_0001' + '.nii.gz'
+        elif file_type == "adc":
+            new_name = new_dir_name + '_' + element_no + '_0000' + '.nii.gz'
+            # new_name = new_dir_name + '_0000_' + str(element) + '.nii.gz'
+        elif file_type == "seg":
+            new_name = new_dir_name + '_' + element_no + '.nii.gz'
+            # new_name = new_dir_name + '_' + str(element) + '.nii.gz'
+        nib.save(nii_file, destination_folder + '/' + new_name)
+    print(new_dir_name + " " + file_type + ' saved')
 
-# Spacing
-spacing=("Spacing: "
-         +str(np.round(sX, decimals=2))
-         +" x "
-         +str(np.round(sY, decimals=2))
-         +" x "
-         +str(np.round(sZ, decimals=2))
-         +" mm"
-)
 
-# Data type
-type=image.header.get_data_dtype()
-type_str=("Data type: "+str(type))
+# %% handling whole whole_process for rat data
+def whole_process_rat(input_file, output, type_file, folder_type):
+    nifti_file = nib.load(input_file)
+    image_array = np.array(nifti_file.dataobj)
 
-# Volumes
-volumes=("Volumes: "+str(image.header['dim'][4]))
+    # if input_image_array has nan values then change it to 0
+    if np.isnan(image_array).any():
+        image_array[np.isnan(image_array)] = 0
 
-# Range
-min=np.round(np.amin(data), decimals=2)
-max=np.round(np.amax(data), decimals=2)
-range=("Range: "+str(min)+" - "+str(max))
+    print(np.isnan(image_array).any())
 
-text=(
-    dim+"\n"
-    +spacing+"\n"
-    +volumes+"\n"
-    +type_str+"\n"
-    +range+"\n\n"
-    +"sform code:\n"
-    +sform_txt+"\n"
-    +"\nqform code:\n"
-    +qform_txt
-)
+    list_patches = create_patches(image_array)
+    saving_patches(list_patches, output, type_file, folder_type)
 
-# Plot text subplot
-ax4=fig.add_subplot(2,2,4)
-plt.text(
-    0.15,
-    0.95,
-    text,
-    horizontalalignment='left',
-    verticalalignment='top',
-    size=6,
-    color='white',
-)
-plt.axis('off')
 
-# Adjust whitespace
-plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+# %% perfect run for rat training data and testing data
 
-# Display
-plt.show()
+for i in rat_trainings_folder.glob("*"):
+    new_dir = i
+    print(new_dir.name)
+    new_dir_name = i.name.replace("-24h", "")
+    print(new_dir_name)
+    type_folder = "train"
+
+    for j in new_dir.glob("*.nii.gz"):
+        if "Masked_ADC" in j.name:
+            adc_file = j
+            print(adc_file.name)
+            whole_process_rat(adc_file, output_folder, "adc", type_folder)
+
+        elif "Masked_T2" in j.name:
+            t2_file = j
+            print(t2_file.name)
+            whole_process_rat(t2_file, output_folder, "t2", type_folder)
+
+        elif "GroundTruth24h" in j.name:
+            gt_file = j
+            print(gt_file.name)
+            whole_process_rat(gt_file, output_folder, "seg", type_folder)
+
+
+#%%
+for i in rat_test_folder.glob("*"):
+    new_dir = i
+    print(new_dir.name)
+    new_dir_name = i.name.replace("-24h", "")
+    print(new_dir_name)
+    type_folder = "test"
+
+    for j in new_dir.glob("*.nii.gz"):
+        if "Masked_ADC" in j.name:
+            adc_file = j
+            print(adc_file.name)
+            whole_process_rat(adc_file, output_folder, "adc", type_folder)
+
+        elif "Masked_T2" in j.name:
+            t2_file = j
+            print(t2_file.name)
+            whole_process_rat(t2_file, output_folder, "t2", type_folder)
+
+        elif "GroundTruth24h" in j.name:
+            gt_file = j
+            print(gt_file.name)
+            whole_process_rat(gt_file, output_folder, "seg", type_folder)
+
