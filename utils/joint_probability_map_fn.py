@@ -6,7 +6,10 @@ import copy
 import numpy as np
 
 # %%
-database = Path("../../../Documents/data/adrian_data/devided/final_data")
+database = Path("input")
+
+for i in database.glob("*.nii.gz"):
+    print(i.name)
 
 
 # %% create a function for the upper code
@@ -37,6 +40,18 @@ def get_data_jpm_plotting(task, type):
     # return data
     return t2_rot, adc_rot, gt_rot
 
+#%%
+adc_path = database / "ADC.nii.gz"
+gt_path = database / "GroundTrouth.nii.gz"
+pred_path = database / "pred.nii.gz"
+adc = nib.load(adc_path).get_fdata()
+gt = nib.load(gt_path).get_fdata()
+pred = nib.load(pred_path).get_fdata()
+
+#%%
+adc_rot = np.rot90(adc, 3)
+gt_rot = np.rot90(gt, 3)
+pred_rot = np.rot90(pred, 3)
 
 # %% plot the t2 therapy data
 # plt.imshow(therapy_t2[:, :, 78], cmap='gray')
@@ -55,7 +70,7 @@ def plot_subplots(image, mask_img, n_rows, n_cols):
     fig, ax = plt.subplots(n_rows, n_cols, figsize=(150, 50))
 
     n = 0
-    slice_no = 55
+    slice_no = 40
     for _ in range(n_rows):
         for _ in range(n_cols):
             ax[n].imshow(image[:, :, slice_no], cmap='gray')
@@ -78,7 +93,7 @@ def plot_subplots_single_modality(image, n_rows, n_cols):
     fig, ax = plt.subplots(n_rows, n_cols, figsize=(150, 50))
 
     n = 0
-    slice_no = 55
+    slice_no = 40
     for _ in range(n_rows):
         for _ in range(n_cols):
             ax[n].imshow(image[:, :, slice_no], cmap='gray')
@@ -122,11 +137,36 @@ therapy_gt = np.flip(therapy_gt, axis=1)
 plt_t2_gt = plot_subplots(therapy_t2, therapy_gt, 1, 5)
 plt_adc_gt = plot_subplots(therapy_adc, therapy_gt, 1, 5)
 
+#%%
+if np.isnan(adc_rot).any():
+    adc_rot[np.isnan(adc_rot)] = 0
+if np.isnan(gt_rot).any():
+    gt_rot[np.isnan(gt_rot)] = 0
+if np.isnan(pred_rot).any():
+    pred_rot[np.isnan(pred_rot)] = 0
+
+#%% mirror the data
+adc_rot = np.flip(adc_rot, axis=1)
+gt_rot = np.flip(gt_rot, axis=1)
+pred_rot = np.flip(pred_rot, axis=1)
+
+#%% plt adc, adc_gt, adc_pred
+plt_adc = plot_subplots_single_modality(adc_rot, 1, 8)
+plt_adc_gt = plot_subplots(adc_rot, gt_rot, 1, 8)
+plt_adc_pred = plot_subplots(adc_rot, pred_rot, 1, 8)
+
+
 # %% folder to save the plots
-plot_path = "new_plots/" + task.name
+plot_path = "new_plots/601"
 # craete a folder if it does not exist
 if not Path(plot_path).exists():
     Path(plot_path).mkdir()
+
+# %% save the plots
+plt_adc.savefig(plot_path + "/adc.png", bbox_inches='tight', dpi=300)
+plt_adc_gt.savefig(plot_path + "/adc_gt.png", bbox_inches='tight', dpi=300)
+plt_adc_pred.savefig(plot_path + "/adc_pred.png", bbox_inches='tight', dpi=300)
+
 
 # %% save the figure
 plt_t2_gt.savefig(plot_path + "/therapy_t2_gt.pdf", bbox_inches="tight", dpi=300)

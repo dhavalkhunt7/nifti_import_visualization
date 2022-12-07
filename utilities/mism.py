@@ -2,7 +2,7 @@
 # Internal modules
 from utilities.confusion_matrix import calc_ConfusionMatrix
 from utilities.dice import calc_DSC_Sets
-from weighted_specificity import calc_Specificity_Weighted
+from utilities.weighted_specificity import calc_Specificity_Weighted
 
 # -----------------------------------------------------#
 #                Calculate : MISmetric                #
