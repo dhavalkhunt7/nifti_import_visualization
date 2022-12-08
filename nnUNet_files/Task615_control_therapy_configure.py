@@ -109,7 +109,7 @@ def sort_files(img ,target_database, count_small, threshold, new_name):
         output_labels_dir = target_database + "/labelsTs"
         output_training_all = target_database + "/all_related_ts"
 
-    if k.name == "Masked_ADC.nii.gz":
+    if k.name == "60.gz":
         label_name = new_name + "_0000.nii.gz"
         print(label_name)
         print(output_training_dir + "/" + label_name)
@@ -141,7 +141,7 @@ def sort_theranostics_data(img ,target_database, count_small, threshold, new_nam
         output_labels_dir = target_database + "/labelsTs"
         output_training_all = target_database + "/all_related_ts"
 
-    if k.name == "ADC.nii.gz":
+    if k.name == "human.nii.gz":
         label_name = new_name + "_0000.nii.gz"
         print(label_name)
         print(output_training_dir + "/" + label_name)
