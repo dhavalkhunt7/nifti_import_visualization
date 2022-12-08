@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="wsic-ml@134.2.117.210:22" remoteFilesAllowedToDisappearOnAutoupload="false" showNewOnTargetInSync="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="wsic-ml@134.2.117.210:22 agent" remoteFilesAllowedToDisappearOnAutoupload="false" showNewOnTargetInSync="false">
     <serverData>
       <paths name="wsic-ml@134.2.117.210:22">
         <serverdata>
@@ -13,6 +13,13 @@
         <serverdata>
           <mappings>
             <mapping deploy="/home/wsic-ml/dhaval/projects/nifti_import_visualization" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wsic-ml@134.2.117.210:22 agent">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/wsic-ml/dhaval/projects/nifti_import_visualization_master" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
