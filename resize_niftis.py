@@ -41,7 +41,7 @@ for i in rat_test_folder.glob("*"):
     print(i.name)
     new_dir = i
     new_dir_name = i.name
-    for j in new_dir.glob("Masked_ADC.nii.gz"):
+    for j in new_dir.glob("60.gz"):
         print(j.name)
         adc = nib.load(j)
         adc_data = adc.get_fdata()

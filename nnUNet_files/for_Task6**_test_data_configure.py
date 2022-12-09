@@ -36,7 +36,7 @@ def save_files(img, target_database, new_name, ):
     output_training_dir = target_database + "/imagesTs"
     output_labels_dir = target_database + "/labelsTs"
 
-    if j.name == "ADC.nii":
+    if j.name == "human.nii":
         label_name = new_name + "_0000.nii.gz"
         print(label_name)
         print(output_training_dir + "/" + label_name)

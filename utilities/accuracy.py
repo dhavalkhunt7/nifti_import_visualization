@@ -1,4 +1,4 @@
-from confusion_matrix import calc_ConfusionMatrix
+from utilities.confusion_matrix import calc_ConfusionMatrix
 
 
 def calc_Accuracy_CM(truth, pred, c=1):

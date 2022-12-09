@@ -62,3 +62,9 @@ def therapy_control_data_division(task_name):
 
 # %%
 therapy_control_data_division("Rats1m")
+
+#%% print hello
+print("hello")
+
+
+#%% print hello
