@@ -1,0 +1,116 @@
+#%%
+# MCC
+# sensitivity
+# specificity
+# precision
+# accuracy
+# false_discovery_rate
+# false_positive_rate
+# positive_predictive_value
+# negative_predictive_value
+# dice - MSIM based
+# weighted_specificity
+
+# %%
+from utilities.confusion_matrix import calc_ConfusionMatrix
+import numpy as np
+import nibabel as nib
+
+# create above function using tp, tn, fp, fn as inputs
+
+def calc_MCC_CM(tp, tn, fp, fn):
+    numerator = (tp * tn) - (fp * fn)
+    denominator = np.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+    return numerator / denominator
+
+def calc_Sensitivity_CM(tp, fn):
+    return tp / (tp + fn)
+
+def calc_Specificity_CM(tn, fp):
+    return tn / (tn + fp)
+
+def calc_Precision_CM(tp, fp):
+    return tp / (tp + fp)
+
+def calc_Accuracy_CM(tp, tn, fp, fn):
+    return (tp + tn) / (tp + tn + fp + fn)
+
+def calc_False_Discovery_Rate_CM(tp, fp):
+    return fp / (tp + fp)
+
+def calc_False_Positive_Rate_CM(fp, tn):
+    return fp / (fp + tn)
+
+def calc_Positive_Predictive_Value_CM(tp, fp):
+    return tp / (tp + fp)
+
+def calc_Negative_Predictive_Value_CM(tn, fn):
+    return tn / (tn + fn)
+
+def calc_Weighted_Specificity_CM(tp, tn, fp, fn):
+    alpha = 0.1
+    if (fp + tn) != 0:
+        wspec = (alpha * tn) / ((1 - alpha) * fp + alpha * tn)
+    else:
+        wspec = 0.0
+    # Return weighted specificity
+    return wspec
+
+def calc_Dice_CM(truth, pred, c=1):
+    # Obtain sets with associated class
+    gt = np.equal(truth, c)
+    pd = np.equal(pred, c)
+    # Calculate Dice
+    if (pd.sum() + gt.sum()) != 0:
+        dice = 2 * np.logical_and(pd, gt).sum() / (pd.sum() + gt.sum())
+    else:
+        dice = 0.0
+    # Return computed Dice
+    return dice
+
+def calc_mismDice_CM(truth, pred, c=1):
+    # Obtain confusion mat
+    tp, tn, fp, fn = calc_ConfusionMatrix(truth, pred, c)
+    # Identify metric wing
+    p = tp + fn
+    # Compute & return normal dice if p > 0
+    if p > 0:
+        return calc_Dice_CM(truth, pred, c)
+    # Compute & return weighted specificity if p = 0
+    else:
+        return calc_Weighted_Specificity_CM(tp, tn, fp, fn)
+
+
+#function to calculate all above metrics by calling above functions
+def calc_all_metrics_CM(truth, pred, c=1):
+    # Obtain confusion mat
+    tp, tn, fp, fn = calc_ConfusionMatrix(truth, pred, c)
+    # Compute & return all metrics
+    return calc_MCC_CM(tp, tn, fp, fn), calc_Sensitivity_CM(tp, fn), calc_Specificity_CM(tn, fp), \
+           calc_Precision_CM(tp, fp), calc_Accuracy_CM(tp, tn, fp, fn), calc_False_Discovery_Rate_CM(tp, fp), \
+           calc_False_Positive_Rate_CM(fp, tn), calc_Positive_Predictive_Value_CM(tp, fp), \
+           calc_Negative_Predictive_Value_CM(tn, fn), calc_mismDice_CM(truth, pred, c), \
+           calc_Weighted_Specificity_CM(tp, tn, fp, fn)
+
+
+#%% funcrion to calculate all the sttas and add them in dict & return dict
+def calc_stats(gt_path, seg_path, dict):
+
+    for i in seg_path.glob("*.nii.gz"):
+        print(i.name)
+        segmentation = nib.load(str(i)).get_fdata()
+        ground_truth = nib.load(str(gt_path / i.name)).get_fdata()
+        print(segmentation.shape)
+        print(ground_truth.shape)
+
+        # flatten data
+        pred_data = segmentation.flatten()
+        label_data = ground_truth.flatten()
+
+        # calculate all metrics using function calc_all_metrics_CM
+        stats = calc_all_metrics_CM(label_data, pred_data, c=1)
+        dict[i.name] = {'mcc': stats[0], 'sens': stats[1], 'spec': stats[2], 'prec': stats[3], 'acc': stats[4],
+                                'FDR': stats[5], 'FPR': stats[6], 'PPV': stats[7], 'NPV': stats[8], 'dice': stats[9],
+                                'wspec': stats[10]}
+
+    return dict

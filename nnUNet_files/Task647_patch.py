@@ -1,5 +1,4 @@
 # %% managing imports
-import shutil
 from pathlib import Path
 import nibabel as nib
 import numpy as np
@@ -9,92 +8,32 @@ import patchify as patchify
 
 # %% import data from Documents/data/adrian_data
 
-input_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/main_files"
-upadated_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/filtered_files"
+input_folder = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/main_files")
+
+human_folder = input_folder / "Human_labelled"
+theranostics_folder = input_folder / "Theranostics"
+ch_training_data = input_folder / "christine_control_data"
+ch_testing_data = input_folder / "christine_therapy_data"
+
 output_folder = "../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/images_trail"
 
-#%% craete folder if not exists
-def create_folder(folder_name):
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-        print(folder_name + " created")
-    else:
-        print(folder_name + " already exists")
 
-
-#%%
-
-human_folder = upadated_folder + "/human"
-mcao_60_folder = upadated_folder + "/mcao_60"
-mcao_100_folder = upadated_folder + "/mcao_100"
-
-#%%
-for i in Path(human_folder).iterdir():
-    print(i)
-
-#%%
-# copy all the data with folders of folder from one folder to another folder
-
-def copy_files(source, destination):
-    shutil.copytree(source, destination, dirs_exist_ok=True)
-
-#%%
-copy_files(input_folder + "/Human_labelled" ,human_folder)
-
-#%%
-copy_files(input_folder + "/Theranostics" ,mcao_100_folder)
-
-#%%
-copy_files(input_folder + "/christine_control_data" ,mcao_60_folder)
-
-#%%
-for i in Path(input_folder).glob("*"):
-    print(i)
-
-#%% delete folfder if exists
-def delete_folder(folder_name):
-    if os.path.exists(folder_name):
-        shutil.rmtree(folder_name)
-        print(folder_name + " deleted")
-    else:
-        print(folder_name + " does not exists")
-
-delete_folder(mcao_60_folder)
-# delete_folder(mcao_100_folder)
-
-#%% create folder if not exists
-def create_folder(folder_name):
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-        print(folder_name + " created")
-    else:
-        print(folder_name + " already exists")
-
-create_folder(human_folder)
-
-#%%
-for i in Path(input_folder).glob('*'):
-    if i.name == "Human_labelled":
-        print(i.name)
-        dir = i
-        # copy all the files from dir i to human folder
-        for file in dir.iterdir():
-            shutil.copy(file, human_folder)
-
-    elif i.name == "Theranostics":
-        print(i.name)
-    elif i.name == "christine_therapy_data":
-        print(i.name)
-    elif i.name == "christine_control_data":
-        print(i.name)
-
+# %% process nifti_file
+def process_nifti(input_file):
+    nifti_file = nib.load(input_file)
+    image_array = np.array(nifti_file.dataobj)
+    if np.isnan(image_array).any():
+        image_array[np.isnan(image_array)] = 0
+    if image_array.shape == [77, 51, 24]:
+        image_array = np.pad(image_array, ((0, 0), (0, 0), (0, 6)), 'constant', constant_values=0)
+    return image_array
 
 
 # %% write a function to create patches and append them to a list
 def create_patches(img):
-    # create patches of 45*45*45 with stride 15
-    patches_1 = patchify.patchify(img, (45, 45, 45), step=15)
-    final_patch = patches_1.reshape(-1, 45, 45, 45)
+    # create patches of 30,30,30 with stride 15
+    patches_1 = patchify.patchify(img, (30, 30, 30), step=15)
+    final_patch = patches_1.reshape(-1, 30, 30, 30)
 
     # extract the patches in 3d shape and save it in a list
     list_patches = []
@@ -106,7 +45,7 @@ def create_patches(img):
 # %% save the patches in a folder as .nii.gz  for human data
 def save_patches(patch_list_whole_img, destination_folder, file_type, counter):
     # if type is t2 or adc then output_folder is output_folder/imagesTs
-    if counter < 24:
+    if counter < 34:
         if file_type == "t2" or file_type == "adc":
             destination_folder = destination_folder + "/imagesTr"
         elif file_type == "seg":
@@ -143,17 +82,54 @@ def save_patches(patch_list_whole_img, destination_folder, file_type, counter):
 
 # %%
 def whole_process(input_file, output, type_file, tally):
-    nifti_file = nib.load(input_file)
-    image_array = np.array(nifti_file.dataobj)
-
-    # if input_image_array has nan values then change it to 0
-    if np.isnan(image_array).any():
-        image_array[np.isnan(image_array)] = 0
-
-    print(np.isnan(image_array).any())
+    image_array = process_nifti(input_file)
 
     list_patches = create_patches(image_array)
     save_patches(list_patches, output, type_file, tally)
+
+
+# %% trail run of
+count = 0
+for j in input_Human_folder.glob("*.nii"):
+    if "Masked_ADC" in j.name:
+        adc_file = j
+        print(adc_file.name)
+        whole_process(adc_file, output_folder, "adc", count)
+
+    elif "T2_norm" in j.name:
+        t2_file = j
+        whole_process(t2_file, output_folder, "t2", count)
+
+    elif "GroundTrouth" in j.name:
+        gt_file = j
+        whole_process(gt_file, output_folder, "seg", count)
+
+# %% perfect run for human data
+count = 1
+for i in input_Human_folder.glob("*"):
+    new_dir = i
+    # new_dir_name = i.name.replace("-24h", "")
+    new_dir_name = i.name
+    print(new_dir_name)
+    print(count)
+
+    for j in new_dir.glob("*.nii"):
+        if "Masked_ADC" in j.name:
+            adc_file = j
+            print(adc_file.name)
+            whole_process(adc_file, output_folder, "adc", count)
+
+        elif "T2_norm" in j.name:
+            t2_file = j
+            print(t2_file.name)
+            whole_process(t2_file, output_folder, "t2", count)
+
+        elif "GroundTrouth" in j.name:
+            gt_file = j
+            print(gt_file.name)
+            whole_process(gt_file, output_folder, "seg", count)
+
+    count += 1
 
 
 # %% for rat data training and testing folder
@@ -236,8 +212,7 @@ for i in rat_trainings_folder.glob("*"):
             print(gt_file.name)
             whole_process_rat(gt_file, output_folder, "seg", type_folder)
 
-
-#%%
+# %%
 for i in rat_test_folder.glob("*"):
     new_dir = i
     print(new_dir.name)
@@ -260,15 +235,3 @@ for i in rat_test_folder.glob("*"):
             gt_file = j
             print(gt_file.name)
             whole_process_rat(gt_file, output_folder, "seg", type_folder)
-
-
-#%% creeate folder if not exist
-folder_name = "../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch/"
-if not os.path.exists(folder_name):
-    os.makedirs(folder_name)
-# print(output_folder)
-
-#%%
-output_folder = '../nnUNet_raw_data_base/nnUNet_raw_data/Task647_patch_trail/images_trail'
-
-copy_files(output_folder, folder_name)
