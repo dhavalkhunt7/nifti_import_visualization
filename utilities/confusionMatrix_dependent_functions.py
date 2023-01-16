@@ -150,3 +150,34 @@ def calc_stats2(data_path, gt_name, pred_name, dict):
                         'wspec': stats[10], 'tversky': stats[11], 'balanced_acc': stats[12]}
 
     return dict
+
+#%% function to calculate stats b/w 1w gt and 24h mask or vice versa.
+def calc_stats3(gt_path, gt_name, pred_path, pred_name, dict):
+    for i in gt_path.glob("*"):
+        # print(i.name)
+        file_name = i.name.replace("-1w", "")
+        # print(file_name)
+
+        # if path exists, then continue
+        new_filename = file_name + "-24h"
+        if (pred_path / new_filename).exists():
+            print(str(pred_path / file_name) + "  path exists")
+            seg_file_name = pred_path / new_filename / pred_name
+            gt_file_name = i / gt_name
+
+            segmentation = nib.load(str(seg_file_name)).get_fdata()
+            ground_truth = nib.load(str(gt_file_name)).get_fdata()
+            print(segmentation.shape)
+            print(ground_truth.shape)
+
+            # flatten data
+            pred_data = segmentation.flatten()
+            label_data = ground_truth.flatten()
+
+            # calculate all metrics using function calc_all_metrics_CM
+            stats = calc_all_metrics_CM(label_data, pred_data)
+            dict[i.name] = {'mcc': stats[0], 'sens': stats[1], 'spec': stats[2], 'prec': stats[3], 'acc': stats[4],
+                            'FDR': stats[5], 'FPR': stats[6], 'PPV': stats[7], 'NPV': stats[8], 'dice': stats[9],
+                            'wspec': stats[10], 'tversky': stats[11], 'balanced_acc': stats[12]}
+
+    return dict
