@@ -29,7 +29,7 @@ if __name__ == '__main__':
     """
 
     # now start the conversion to nnU-Net:
-    task_name = 'Task715_sampling_threshold'
+    task_name = 'Task717_sampling_threshold'
     target_base = join(Path("../nnUNet_raw_data_base/nnUNet_raw_data"), task_name)
     target_imagesTr = join(target_base, "imagesTr")
     target_imagesTs = join(target_base, "imagesTs")

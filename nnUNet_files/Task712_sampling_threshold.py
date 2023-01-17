@@ -92,3 +92,7 @@ for i in database.glob("*"):
         save_files(nib.load(adc_file), path + "/Task712_sampling_threshold", new_name, flag_type, "adc")
         save_files(nib.load(t2_file), path + "/Task712_sampling_threshold", new_name, flag_type, "t2")
         save_files(nib.load(gt_file), path + "/Task712_sampling_threshold", new_name, flag_type, "mask")
+
+# %%
+task_name = "/Task802_therapy_training/"
+create_folder(path + task_name + "result")
