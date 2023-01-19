@@ -30,11 +30,81 @@ t2_path = data_path / "imagesTs"
 #%%
 dict_task = {}
 
-for i in seg_path.iterdir():
+for i in seg_path.glob("*.nii.gz"):
+    print(i.name)
     name = i.name.split(".nii")[0]
     print(name)
+    dict_task[name] = {}
+
+    if (t2_path / i.name.replace(".nii","_0001.nii")).exists():
+        print("t2 exists")
+        dict_task[name]["t2"] = str(t2_path / i.name.replace(".nii","_0001.nii"))
     if (gt_path / i.name).exists():
         print("seg exists")
+        dict_task[name]["gt"] = str(gt_path / i.name)
+    dict_task[name]["seg"] = str(i)
+    if (seg_path_3d / i.name).exists():
+        print("seg_3d exists")
+        dict_task[name]["seg_3d"] = str(seg_path_3d / i.name)
+
+#%% dict to df
+import pandas as pd
+df = pd.DataFrame.from_dict(dict_task, orient="index")
+
+#%% extract data from dict and save it in another dict
+dict_final_data = {}
+for i in dict_task.keys():
+    print(i)
+    # task = dataset_path / i
+    # print values of key
+    print(dict_task[i])
+
+    if "seg" in dict_task[i].keys():
+        dict_final_data[i] = {"seg": extract_data(dict_task[i]["seg"])}
+        if "t2" in dict_task[i].keys():
+            dict_final_data[i]["t2"] = extract_data(dict_task[i]["t2"])
+        if "gt" in dict_task[i].keys():
+            dict_final_data[i]["gt"] = extract_data(dict_task[i]["gt"])
+        if "seg_3d" in dict_task[i].keys():
+            dict_final_data[i]["seg_3d"] = extract_data(dict_task[i]["seg_3d"])
+
+#%% dict to df
+# import pandas as pd
+df_final_data = pd.DataFrame.from_dict(dict_final_data, orient="index")
+
+#%% dict final data to separate lists
+t2_list = []
+gt_list = []
+seg_list = []
+
+print(" adding the data to the list...")
+# add the data to the list from dict_final_data
+for i in dict_final_data.keys():
+    # print(i)
+    seg_list.append(dict_final_data[i]["seg"])
+    # check if there is nan values in the t2 data and if there is then replace them with 0 and add it to the list,
+    # if not add to list directly
+    if np.isnan(dict_final_data[i]["t2"]).any():
+        dict_final_data[i]["t2"][np.isnan(dict_final_data[i]["t2"])] = 0
+        t2_list.append(dict_final_data[i]["t2"])
+    else:
+        t2_list.append(dict_final_data[i]["t2"])
+    gt_list.append(dict_final_data[i]["gt"])
+print("list created")
+
+#%%
+print("saving final images for jpm")
+# save the final data for therapy and control
+nib.save(nib.Nifti1Image(np.mean(t2_list, axis=0), np.eye(4)), dataset_path / "jpm_&_mean_files/1m/final_t2.nii.gz")
+nib.save(nib.Nifti1Image(np.mean(gt_list, axis=0), np.eye(4)), dataset_path / "jpm_&_mean_files/1m/final_gt.nii.gz")
+nib.save(nib.Nifti1Image(np.mean(seg_list, axis=0), np.eye(4)), dataset_path / "jpm_&_mean_files/1m/final_seg_unet.nii.gz")
+
+print("final images saved in folder" + str(dataset_path / "jpm_&_mean_files/1m"))
+
+
+
+
+
 
 
 
