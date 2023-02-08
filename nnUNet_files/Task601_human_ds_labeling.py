@@ -10,8 +10,21 @@ img_dir =Path("../../../Documents/data/Adrian_chamba_strokes_data/Human")
 output_dir = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task601_human")
 output_training_dir = output_dir / "imagesTr"
 output_labels_tr = output_dir / "labelsTr"
+output_labels_ts = output_dir / "labelsTs"
 output_testing_dir = output_dir / "imagesTs"
 output_testing_all = output_dir / "all_about_testing"
+
+#%%
+for i in output_testing_all.glob("*"):
+    print(i.name)
+    new_dir = i
+    for j in new_dir.glob("*"):
+        print(j.name)
+        if j.name == "GroundTrouth.nii.gz":
+            #save it to labelsTs folder
+            img = nb.load(j)
+            label_name = i.name + "1.nii.gz"
+            nb.save(img, output_labels_ts / label_name)
 
 #%%
 for i in img_dir.glob("*"):

@@ -11,31 +11,76 @@ from utilities.confusionMatrix_dependent_functions import *
 import os
 
 
+
 #%% 605 24h
 
-data_path = Path("../../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat")
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task601_human")
+
+for i in data_path.iterdir():
+    print(i)
 
 #%%
 dict_24h = {}
-segmentation_path = data_path / "resultTs"
+segmentation_path = data_path / "result_3d"
 gt_path = data_path / "labelsTs"
 
 #%%
-calc_stats(segmentation_path, gt_path, dict_24h)
+calc_stats(gt_path, segmentation_path, dict_24h)
 
 #%% dict to df
 df_24h = pd.DataFrame.from_dict(dict_24h, orient='index')
 
-#%% save to csv
-df_24h.to_csv(str(data_path) + "/24h.csv")
 
-#%% 605 24h 3d
+# get the index of df as a list
+index_list = df_24h.index.tolist()
+# remove .nii.gz from the index
+index_list = [i.split(".nii.gz")[0] for i in index_list]
+
+#%% remove .nii.gz from the index name of df
+df_24h.index = df_24h.index.str.replace('.nii.gz', '')
+
+#%% sort the index
+df_24h = df_24h.sort_index()
+
+
+#%% if tversky is nan, remove the row with index
+for i in index_list:
+    if np.isnan(df_24h.loc[i, 'tversky']):
+        df_24h = df_24h.drop(i)
+# df_24h = df_24h.dropna()
+
+#%% save to csv
+df_24h.to_csv(str(data_path) + "/human.csv")
+
+#%% get mean of dice and tversky  and msism
+print(np.mean(df_24h['dice']))
+print(np.mean(df_24h['tversky']))
+print(np.mean(df_24h['mism']))
+#%% remove the raw with nan in tversky
+df_24h = df_24h.dropna()
+
+#%% 24h 1w gt
+dict_24h_1w = {}
+segmentation_path = data_path / "result"
+gt_path = data_path / "testing/1w/labelsTs"
+
+#%%
+calc_stats(gt_path, segmentation_path, dict_24h_1w)
+
+#%% dict to df
+df_24h_1w = pd.DataFrame.from_dict(dict_24h_1w, orient='index')
+
+#%% save to csv
+df_24h_1w.to_csv(str(data_path) + "/24h_1w_gt.csv")
+
+
+#%% 610 24h 3d
 segmentation_path = data_path / "resultTs_3d"
 gt_path = data_path / "labelsTs"
 
 #%%
 dict_24h_3d = {}
-calc_stats(segmentation_path, gt_path, dict_24h_3d)
+calc_stats(gt_path, segmentation_path, dict_24h_3d)
 
 #%% dict to df
 df_24h_3d = pd.DataFrame.from_dict(dict_24h_3d, orient='index')

@@ -1,28 +1,28 @@
 #%%
-from utilities.confusion_matrix import calc_ConfusionMatrix
-from utilities.confusionMatrix_dependent_functions import *
-import numpy as np
-import shutil
 from pathlib import Path
 import pandas as pd
-import nibabel as nib
-import numpy as np
 from utilities.confusionMatrix_dependent_functions import *
-import os
 
+
+#%% print current working directory
+import os
+print(os.getcwd())
 
 #%% 705
 
 data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data")
 
-rs_path = data_path / "Task710_sampling_threshold"
 #%% 705
+rs_path = data_path / "Task705_sampling_threshold"
 dict_705 = {}
-segmentation_path = data_path / "result"
-gt_path = data_path / "labelsTs"
+segmentation_path = rs_path / "result"
+gt_path = rs_path / "labelsTs"
+
+for i in segmentation_path.glob("*.nii.gz"):
+    print(i.name)
 
 #%%
-calc_stats(segmentation_path, gt_path, dict_705)
+calc_stats(gt_path, segmentation_path, dict_705)
 
 #%% dict to df 705
 df_705 = pd.DataFrame.from_dict(dict_705, orient='index')
@@ -32,7 +32,8 @@ np.mean(df_705['dice'])
 
 
 #%% save to csv 705
-df_705.to_csv(str(data_path) + "/705.csv")
+df_705.to_csv(str(rs_path) + "/705.csv")
+
 
 #%% 706
 rs_path = data_path / "Task706_sampling_threshold"
@@ -244,17 +245,39 @@ df_802.to_csv(str(rs_path) + "/802.csv")
 
 
 #%% GMM stats 24h
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/")
+
+
 rs_path = data_path / "Task610_rat/testing/gmm_files/24h"
 dict_gmm_24h = {}
 segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
+
+for i in segmentation_path.glob("*"):
+    print(i)
 
 calc_stats(segmentation_path, gt_path, dict_gmm_24h)
 
 #%% dict to df gmm 24h & save to csv gmm 24h
 df_gmm_24h = pd.DataFrame.from_dict(dict_gmm_24h, orient='index')
 
-df_gmm_24h.to_csv(str(rs_path) + "/gmm_24h.csv")
+#%% remove .nii from index
+df_gmm_24h.index = df_gmm_24h.index.str.replace('.nii', '')
+
+
+#%%
+dict = {}
+for i in df_gmm_24h.index:
+    print(i)
+    str = i
+    #if str is in index_list, add to dict
+    if str in index_list:
+        dict[i] = df_gmm_24h.loc[i]
+
+#%% dict to df
+df_gmm_same_testing = pd.DataFrame.from_dict(dict, orient='index')
+#%%
+df_gmm_same_testing.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/gmm_24h_with_same_testing_data.csv")
 
 #%% GMM stats 72h
 rs_path = data_path / "Task610_rat/testing/gmm_files/72h"
@@ -328,8 +351,24 @@ df_725.to_csv(str(rs_path) + "/725.csv")
 #%%
 np.mean(df_725['dice'])
 
+#%% 720
+rs_path = data_path / "Task720_sampling_threshold"
+dict_720 = {}
+segmentation_path = rs_path / "result"
+gt_path = rs_path / "labelsTs"
+
+calc_stats(segmentation_path, gt_path, dict_720)
+
+#%% dict to df 720 & save to csv 720
+df_720 = pd.DataFrame.from_dict(dict_720, orient='index')
+
+df_720.to_csv(str(rs_path) + "/720.csv")
+
 #%% 651_rat
 rs_path = data_path / "Task651_rat"
+
+for i in rs_path.iterdir():
+    print(i)
 dict_651 = {}
 segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
@@ -339,7 +378,7 @@ calc_stats(segmentation_path, gt_path, dict_651)
 #%% dict to df 651 & save to csv 651
 df_651 = pd.DataFrame.from_dict(dict_651, orient='index')
 
-df_651.to_csv(str(rs_path) + "/651.csv")
+df_651.to_csv(str(rs_path) + "/651_twersky.csv")
 
 #%%
 np.mean(df_651['tversky'])
@@ -359,3 +398,9 @@ df_650.to_csv(str(rs_path) + "/650.csv")
 
 #%%
 np.mean(df_650['dice'])
+
+#%% 651_patch
+rs_path = data_path / "Task651_patch"
+dict_651 = {}
+segmentation_path = rs_path / "result"
+gt_path = rs_path / "labelsTs"

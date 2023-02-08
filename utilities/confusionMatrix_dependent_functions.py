@@ -71,6 +71,7 @@ def calc_Dice_CM(truth, pred, c=1):
 def calc_mismDice_CM(truth, pred):
     # Obtain confusion mat
     tp, tn, fp, fn = calc_ConfusionMatrix(truth, pred)
+    alpha = 0.1
     # Identify metric wing
     p = tp + fn
     # Compute & return normal dice if p > 0
@@ -78,14 +79,14 @@ def calc_mismDice_CM(truth, pred):
         return calc_Dice_CM(truth, pred, c=1)
     # Compute & return weighted specificity if p = 0
     else:
-        return calc_Weighted_Specificity_CM(tp, tn, fp, fn)
+        return (tp * alpha) / (alpha * tn + (1 - alpha) * fp)
 
 def calc_balanced_accuracy(sens, spec):
     return (sens + spec) / 2
 
 #tversky scores
 def calc_tversky_score(tp, tn, fp, fn):
-    alpha = 0.5
+    alpha = 0.7
     return tp / (tp + alpha * fp + (1 - alpha) * fn)
 
 
@@ -99,11 +100,21 @@ def calc_all_metrics_CM(truth, pred):
            calc_False_Positive_Rate_CM(fp, tn), calc_Positive_Predictive_Value_CM(tp, fp), \
            calc_Negative_Predictive_Value_CM(tn, fn), calc_mismDice_CM(truth, pred), \
            calc_Weighted_Specificity_CM(tp, tn, fp, fn), calc_tversky_score(tp, tn, fp, fn), \
-           calc_balanced_accuracy(calc_Sensitivity_CM(tp, fn), calc_Specificity_CM(tn, fp))
+           calc_balanced_accuracy(calc_Sensitivity_CM(tp, fn), calc_Specificity_CM(tn, fp)), \
+            calc_Dice_CM(truth, pred, c=1)
 
 
 #%% funcrion to calculate all the sttas and add them in dict & return dict
 def calc_stats(gt_path, seg_path, dict):
+
+    print(gt_path)
+    print(seg_path)
+
+    # if gt_path exists
+    if gt_path.exists():
+        print("GT path exists")
+    if seg_path.exists():
+        print("Seg path exists")
 
     for i in seg_path.glob("*.nii.gz"):
         print(i.name)
@@ -119,8 +130,8 @@ def calc_stats(gt_path, seg_path, dict):
         # calculate all metrics using function calc_all_metrics_CM
         stats = calc_all_metrics_CM(label_data, pred_data)
         dict[i.name] = {'mcc': stats[0], 'sens': stats[1], 'spec': stats[2], 'prec': stats[3], 'acc': stats[4],
-                                'FDR': stats[5], 'FPR': stats[6], 'PPV': stats[7], 'NPV': stats[8], 'dice': stats[9],
-                                'wspec': stats[10], 'tversky': stats[11], 'balanced_acc': stats[12]}
+                                'FDR': stats[5], 'FPR': stats[6], 'PPV': stats[7], 'NPV': stats[8], 'mism': stats[9],
+                                'wspec': stats[10], 'tversky': stats[11], 'balanced_acc': stats[12], 'dice': stats[13]}
 
     return dict
 

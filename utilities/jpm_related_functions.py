@@ -231,6 +231,26 @@ def plot_subplots(image, mask_img, n_rows, n_cols):
     # plt.show()
     return fig
 
+#%% create a function plot subplots of the mask only
+def plot_subplots_single_modality(image, n_rows, n_cols):
+    fig, ax = plt.subplots(n_rows, n_cols, figsize=(150, 50))
+
+    n = 0
+    slice_no = 45
+    for _ in range(n_rows):
+        for _ in range(n_cols):
+            ax[n].imshow(image[:, :, slice_no], cmap='hot', alpha=0.7, vmin=0, vmax=1)
+            ax[n].set_xticks([])
+            ax[n].set_yticks([])
+            # hider border of subplot
+            ax[n].set_frame_on(False)
+            ax[n].set_title('Slice {}'.format(slice_no), color='r', fontsize=5)
+            n += 1
+            slice_no += 10
+    fig.subplots_adjust(wspace=0, hspace=0)
+    # plt.show()
+    return fig
+
 #%%
 # adc_rot = np.flip(adc_rot, axis=1)
 # gt_rot = np.flip(gt_rot, axis=1)

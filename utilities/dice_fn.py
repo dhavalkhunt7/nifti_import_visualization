@@ -2,23 +2,6 @@ import numpy as np
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # %%
 # def dice(prediction_array, label_array):
 #     alpha = 0.1

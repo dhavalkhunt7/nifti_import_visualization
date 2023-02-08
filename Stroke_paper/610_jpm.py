@@ -272,3 +272,51 @@ plt_t2_gmm.savefig(str(data_path) + "/t2_gmm.pdf", bbox_inches="tight", dpi=300)
 #%%
 for i in dataset_path.iterdir():
     print(i.name)
+
+#%%
+task_name = "Task1"
+data_path = dataset_path / task_name
+for i in data_path.iterdir():
+    print(i.name)
+
+unet_file = data_path / "24h_all/final_seg_nnunet.nii.gz"
+gt_1w_file = data_path / "1w_gt/final_gt.nii.gz"
+t2_file = data_path / "24h_all/final_t2.nii.gz"
+gmm_file = data_path / "24h_all/final_seg_gmm.nii.gz"
+
+#%% load data
+unet_data = nib.load(unet_file).get_fdata()
+gt_1w_data = nib.load(gt_1w_file).get_fdata()
+t2_data = nib.load(t2_file).get_fdata()
+gmm_data = nib.load(gmm_file).get_fdata()
+
+print(unet_data.shape)
+print(gt_1w_data.shape)
+print(t2_data.shape)
+print(gmm_data.shape)
+
+# rotate the data by 3 times
+unet_data_rot = np.rot90(unet_data, 3)
+gt_1w_data_rot = np.rot90(gt_1w_data, 3)
+t2_data_rot = np.rot90(t2_data, 3)
+gmm_data_rot = np.rot90(gmm_data, 3)
+
+#%%
+shrinkage_file_unet = unet_data_rot - gt_1w_data_rot
+shrinkage_file_gmm = gmm_data_rot - gt_1w_data_rot
+
+#%% plot using plot_subplots
+# plt_t2_shrinkage_unet = plot_subplots(t2_data_rot, shrinkage_file_unet, 1, 8)
+# plt_shrinkage_unet = plot_subplots_single_modality(shrinkage_file_unet, 1, 8)
+plt_t2_shrinkage_gmm = plot_subplots(t2_data_rot, shrinkage_file_gmm, 1, 8)
+plt_shrinkage_gmm = plot_subplots_single_modality(shrinkage_file_gmm, 1, 8)
+
+
+# %% save the figure
+# plt_t2_shrinkage.savefig(str(data_path) + "/t2_shrinkage.pdf", bbox_inches="tight", dpi=300)
+# plt_shrinkage.savefig(str(data_path) + "/shrinkage.pdf", bbox_inches="tight", dpi=300)
+plt_shrinkage_gmm.savefig(str(data_path) + "/shrinkage_gmm.pdf", bbox_inches="tight", dpi=300)
+plt_t2_shrinkage_gmm.savefig(str(data_path) + "/t2_shrinkage_gmm.pdf", bbox_inches="tight", dpi=300)
+
+
+

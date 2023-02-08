@@ -143,3 +143,24 @@ darfluid_4d_nii = nib.Nifti1Image(darfluid_4d, np.eye(4))
 nib.save(darfluid_4d_nii, "chamba_tasks/darfluid_4d.nii.gz")
 
 
+
+
+
+
+#%%
+path = Path("../../../Downloads")
+
+output_data = path / "data"
+
+for i in path.glob("Human31.nii"):
+    print(i.name)
+    img = nib.load(i)
+    nib.save(img, str(path / i.name) + ".gz")
+
+
+
+
+
+
+# img = nib.load(i)
+# nib.save(img, i.with_suffix(".nii.gz"))
