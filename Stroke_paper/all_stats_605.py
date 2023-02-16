@@ -261,54 +261,6 @@ for i in segmentation_path.glob("*.nii.gz"):
 df_dice_bal_acc = pd.DataFrame.from_dict(dice_bal_acc, orient='index')
 
 
-#%%
-dice_dict = {}
-for i in labels_human.glob("*.nii.gz"):
-    print(i.name)
-    new_dir = i
-
-    label_data = nib.load(i).get_fdata()
-    name = i.name
-    pred_data = nib.load(pred_human / name).get_fdata()
-    print(label_data.shape)
-    print(pred_data.shape)
-
-    # flatten data
-    label_data = label_data.flatten()
-    pred_data = pred_data.flatten()
-
-    # calculate all metrics
-    tp, tn, fp, fn = calc_ConfusionMatrix(label_data, pred_data, c=1)
-    mcc = calc_MCC_CM(tp, tn, fp, fn)
-    acc = calc_Accuracy_CM(tp, tn, fp, fn)
-    sens = calc_Sensitivity_CM(tp, fn)
-    spec = calc_Specificity_CM(tn, fp)
-    prec = calc_Precision_CM(tp, fp)
-    false_Discovery_Rate = calc_False_Discovery_Rate_CM(fp, tp)
-    false_Positive_Rate = calc_False_Positive_Rate_CM(fp, tn)
-    positive_predictive_value = calc_Positive_Predictive_Value_CM(tp, fn)
-    negative_predictive_value = calc_Negative_Predictive_Value_CM(tn, fp)
-    dice = calc_mismDice_CM(truth=label_data, pred=pred_data, c=1)
-    wspec = calc_Weighted_Specificity_CM(tn, tn, fp, fn)
-
-    # add the results to the dictionary with
-    # dice_dict[i.name] = {"normal_dice": normal_dice, "mism_dice": mism_dice}
-    dice_dict[i.name] = {"mcc": mcc, "accuracy": acc, "sensitivity": sens, "specificity": spec, "precision": prec, \
-        "false_Discovery_Rate": false_Discovery_Rate, "false_Positive_Rate": false_Positive_Rate,\
-        "positive_predictive_value": positive_predictive_value, "negative_predictive_value": negative_predictive_value,\
-        "dice": dice, "wspec": wspec, "tp": tp, "tn": tn, "fp": fp, "fn": fn}
-
-#%% dict to dataframe
-import pandas as pd
-df = pd.DataFrame.from_dict(dice_dict, orient='index')
-
-#%%
-# save the dataframe as csv files in results folder
-df.to_csv("results/605_rat.csv")
-
-#%%
-# ------------------------------610---------------------------------#
-
 
 #%%
 # ------------------------------645---------------------------------#

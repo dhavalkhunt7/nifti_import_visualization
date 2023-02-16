@@ -231,7 +231,8 @@ def plot_subplots(image, mask_img, n_rows, n_cols):
     # plt.show()
     return fig
 
-#%% create a function plot subplots of the mask only
+
+#%%
 def plot_subplots_single_modality(image, n_rows, n_cols):
     fig, ax = plt.subplots(n_rows, n_cols, figsize=(150, 50))
 
@@ -239,7 +240,7 @@ def plot_subplots_single_modality(image, n_rows, n_cols):
     slice_no = 45
     for _ in range(n_rows):
         for _ in range(n_cols):
-            ax[n].imshow(image[:, :, slice_no], cmap='hot', alpha=0.7, vmin=0, vmax=1)
+            ax[n].imshow(image[:, :, slice_no], cmap='gray')
             ax[n].set_xticks([])
             ax[n].set_yticks([])
             # hider border of subplot
@@ -250,41 +251,6 @@ def plot_subplots_single_modality(image, n_rows, n_cols):
     fig.subplots_adjust(wspace=0, hspace=0)
     # plt.show()
     return fig
-
-#%%
-# adc_rot = np.flip(adc_rot, axis=1)
-# gt_rot = np.flip(gt_rot, axis=1)
-# pred_rot = np.flip(pred_rot, axis=1)
-#
-# #%% plt adc, adc_gt, adc_pred
-# plt_adc = plot_subplots_single_modality(adc_rot, 1, 8)
-# plt_adc_gt = plot_subplots(adc_rot, gt_rot, 1, 8)
-# plt_adc_pred = plot_subplots(adc_rot, pred_rot, 1, 8)
-#
-#
-# # %% folder to save the plots
-# plot_path = "new_plots/601"
-# # craete a folder if it does not exist
-# if not Path(plot_path).exists():
-#     Path(plot_path).mkdir()
-#
-# # %% save the plots
-# plt_adc.savefig(plot_path + "/adc.png", bbox_inches='tight', dpi=300)
-# plt_adc_gt.savefig(plot_path + "/adc_gt.png", bbox_inches='tight', dpi=300)
-# plt_adc_pred.savefig(plot_path + "/adc_pred.png", bbox_inches='tight', dpi=300)
-#
-#
-# # %% save the figure
-# plt_t2_gt.savefig(plot_path + "/therapy_t2_gt.pdf", bbox_inches="tight", dpi=300)
-# plt_adc_gt.savefig(plot_path + "/therapy_adc_gt.pdf", bbox_inches="tight", dpi=300)
-#
-# # %% plot only adc and ony t2
-# plt_t2 = plot_subplots_single_modality(therapy_t2, 1, 5)
-# plt_adc = plot_subplots_single_modality(therapy_adc, 1, 5)
-#
-# # %% save the figure
-# plt_t2.savefig(plot_path + "/therapy_t2.pdf", bbox_inches="tight", dpi=300)
-# plt_adc.savefig(plot_path + "/therapy_adc.pdf", bbox_inches="tight", dpi=300)
 
 
 

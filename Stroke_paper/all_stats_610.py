@@ -10,8 +10,24 @@ import numpy as np
 from utilities.confusionMatrix_dependent_functions import *
 import os
 
+#%% data path 650_patch gmm testing data
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task650_patch/gmm_testing/data")
 
 
+#%%
+task_name = "mcao_100"
+rs_path = data_path / task_name
+seg_path = rs_path / "result"
+gt_path = rs_path / "labelsTs"
+dict_650 = {}
+
+calc_stats(gt_path, seg_path, dict_650)
+
+#%% dict to df 650
+df_650 = pd.DataFrame.from_dict(dict_650, orient='index')
+
+# save to csv 650
+df_650.to_csv(str(rs_path / task_name) + ".csv")
 #%% 605 24h
 
 data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task601_human")
@@ -244,3 +260,116 @@ for i in segmentation_path.glob("*.nii.gz"):
 #%% dict to df and save to csv
 df = pd.DataFrame.from_dict(dict_24h_seg_1w_mask, orient='index')
 df.to_csv(str(data_path) + "/24h_pred_1w_gt.csv")
+
+#%% 645 Patch 2d Rat24h
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task645_Patch_2d_Rat24h/")
+segmentation_path = data_path / "rat_result_reconstructed"
+gt_path = data_path / "labels_reconstructed"
+dict_645_2d = {}
+
+#%% 610
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/1w")
+segmentation_path = data_path / "24h_gt"
+gt_path = data_path / "labelsTs"
+dict_610_gt1w_gt24h = {}
+calc_stats(gt_path, segmentation_path, dict_610_gt1w_gt24h)
+
+#%% dict to df and save to csv
+df = pd.DataFrame.from_dict(dict_610_gt1w_gt24h, orient='index')
+df.to_csv(str(data_path) + "/610_gt1w_gt24h.csv")
+
+#%% control list
+data_path = Path("../../../Documents/data/adrian_data/devided/Rats24h/control")
+control_list = []
+for i in data_path.glob("*"):
+    print(i.name)
+    new_name = i.name.split("-")[0]
+    print(new_name)
+    #add new name to list
+    control_list.append(new_name)
+
+#%% remove nii.gz from df index
+df.index = df.index.str.replace(".nii.gz", "")
+
+
+
+#%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in df.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(df.loc[i])
+    else:
+        df_control = df_control.append(df.loc[i])
+
+#%% save to csv
+df_therapy.to_csv(str(data_path) + "/therapy_gt1w_gt24h.csv")
+df_control.to_csv(str(data_path) + "/control_gt1w_gt14h.csv")
+
+#%% 610_rat read csv
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/1w")
+
+df_24h = pd.read_csv(str(data_path) + "/610_gt1w_gt24h.csv", index_col=0)
+
+#%% remove nii.gz from df index
+# df_24h.index = df_24h.index.str.replace(".nii.gz", "")
+# remove unnamed column
+# df_24h = df_24h.drop(columns=["Unnamed: 0"])
+# drop raw if tversly is noy zero add to new_df
+new_df = pd.DataFrame()
+for i in df_24h.index:
+    if df_24h.loc[i, "tversky"] != 0:
+        new_df = new_df.append(df_24h.loc[i])
+
+#%% #%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in df_24h.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(df_24h.loc[i])
+    else:
+        df_control = df_control.append(df_24h.loc[i])
+
+#%% save to csv
+new_df.to_csv(str(data_path) + "/610_gt1w_gt24h.csv")
+# df_control.to_csv(str(data_path) + "/control_gmm_24h_1w_gt_with_same_testing_data.csv")
+
+#%% 610 rat testing 1w
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/1w")
+segmentation_path = data_path / "24h_gt"
+gt_path = data_path / "labelsTs"
+
+dict_610_gt1w_gt24h = {}
+calc_stats(gt_path, segmentation_path, dict_610_gt1w_gt24h)
+
+#%% dict to df and save to csv
+df = pd.DataFrame.from_dict(dict_610_gt1w_gt24h, orient='index')
+
+#%%
+new_df = pd.DataFrame()
+for i in df.index:
+    if df.loc[i, "tversky"] != 0:
+        new_df = new_df.append(df.loc[i])
+
+#%% save to csv
+new_df.to_csv(str(data_path) + "/610_gt1w_gt24h.csv")
+
+#%% new df remove nii.gz from df index
+new_df.index = new_df.index.str.replace(".nii.gz", "")
+
+#%% #%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in new_df.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(new_df.loc[i])
+    else:
+        df_control = df_control.append(new_df.loc[i])
+
+#%% save to csv
+df_therapy.to_csv(str(data_path) + "/therapy_gt1w_gt24h.csv")
+df_control.to_csv(str(data_path) + "/control_gt1w_gt14h.csv")
+
