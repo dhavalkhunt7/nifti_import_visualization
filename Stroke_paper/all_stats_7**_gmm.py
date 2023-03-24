@@ -17,13 +17,13 @@ segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
 
 #%%
-calc_stats(segmentation_path, gt_path, dict_05)
+calc_stats(gt_path, segmentation_path, dict_05)
 
 #%% dict to df 05
 df_05 = pd.DataFrame.from_dict(dict_05, orient='index')
 
 #%%  mean of df_705 dice
-np.mean(df_05['dice'])
+np.mean(df_05['tversky'])
 
 
 #%% save to csv 705
@@ -37,7 +37,7 @@ dict_10 = {}
 segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_10)
+calc_stats(gt_path, segmentation_path, dict_10)
 
 #%% dict to df 10
 df_10 = pd.DataFrame.from_dict(dict_10, orient='index')
@@ -53,7 +53,7 @@ dict_15 = {}
 segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_15)
+calc_stats(gt_path, segmentation_path, dict_15)
 
 #%% dict to df 15
 df_15 = pd.DataFrame.from_dict(dict_15, orient='index')
@@ -68,7 +68,7 @@ dict_20 = {}
 segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_20)
+calc_stats(gt_path, segmentation_path, dict_20)
 
 #%% dict to df 20
 df_20 = pd.DataFrame.from_dict(dict_20, orient='index')
@@ -83,9 +83,16 @@ dict_25 = {}
 segmentation_path = rs_path / "result"
 gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_25)
+calc_stats(gt_path, segmentation_path, dict_25)
 
 #%% dict to df 25
 df_25 = pd.DataFrame.from_dict(dict_25, orient='index')
 
 df_25.to_csv(str(data_path) + "/25.csv")
+
+#%% print mean of tversky
+print(np.mean(df_05['tversky']))
+print(np.mean(df_10['tversky']))
+print(np.mean(df_15['tversky']))
+print(np.mean(df_20['tversky']))
+print(np.mean(df_25['tversky']))

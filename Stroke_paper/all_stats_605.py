@@ -70,7 +70,7 @@ df_rfc72h.to_csv(str(rfc_72h) + "/RFC_72h.csv")
 
 #%% 605 24h
 
-data_path = Path("../../nnUNet_raw_data_base/nnUNet_raw_data/Task605_rat")
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task605_rat")
 
 #%%
 dict_24h = {}
@@ -78,13 +78,17 @@ segmentation_path = data_path / "resultTs"
 gt_path = data_path / "labelsTs"
 
 #%%
-calc_stats(segmentation_path, gt_path, dict_24h)
+calc_stats(gt_path, segmentation_path, dict_24h)
 
 #%% dict to df
 df_24h = pd.DataFrame.from_dict(dict_24h, orient='index')
 
+#%%mean tversky
+print("mean tversky: ", df_24h["tversky"].mean())
+
+
 #%% save to csv
-df_24h.to_csv(str(data_path) + "/24h.csv")
+df_24h.to_csv(str(data_path) + "/70_30_24h.csv")
 
 #%% 605 24h 3d
 segmentation_path = data_path / "resultTs_3d"

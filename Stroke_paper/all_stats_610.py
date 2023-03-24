@@ -10,6 +10,27 @@ import numpy as np
 from utilities.confusionMatrix_dependent_functions import *
 import os
 
+#%% 612
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task612_mcao60_gmmLabels")
+rs_path = data_path
+dict_612 = {}
+segmentation_path = rs_path / "result"
+gt_path = rs_path / "testing/labelsTs"
+
+#%%
+calc_stats(gt_path, segmentation_path, dict_612)
+
+#%% dict to df 650
+df_650 = pd.DataFrame.from_dict(dict_612, orient='index')
+
+# save to csv 650
+df_650.to_csv(str(rs_path / "612_gmm_gt_compare") + ".csv")
+
+
+#%% mean and median tvwrsky print
+print("mean tversky: ", df_650["tversky"].mean())
+print("median tversky: ", df_650["tversky"].median())
+
 #%% data path 650_patch gmm testing data
 data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task650_patch/gmm_testing/data")
 
@@ -90,8 +111,20 @@ df_24h_1w = pd.DataFrame.from_dict(dict_24h_1w, orient='index')
 df_24h_1w.to_csv(str(data_path) + "/24h_1w_gt.csv")
 
 
+
+
+
+
+
+
+
+
+#%%
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/")
+
+
 #%% 610 24h 3d
-segmentation_path = data_path / "resultTs_3d"
+segmentation_path = data_path / "result"
 gt_path = data_path / "labelsTs"
 
 #%%
@@ -101,7 +134,261 @@ calc_stats(gt_path, segmentation_path, dict_24h_3d)
 #%% dict to df
 df_24h_3d = pd.DataFrame.from_dict(dict_24h_3d, orient='index')
 
-df_24h_3d.to_csv(str(data_path) + "/24h_3d.csv")
+# mean tversky
+print(np.mean(df_24h_3d['tversky']))
+# median tversky
+print(np.median(df_24h_3d['tversky']))
+#%%
+df_24h_3d.to_csv(str(data_path) + "/24h.csv")
+
+
+#%% control list
+data_path = Path("../../../Documents/data/adrian_data/devided/Rats24h/control")
+control_list = []
+for i in data_path.glob("*"):
+    print(i.name)
+    new_name = i.name.split("-")[0]
+    print(new_name)
+    #add new name to list
+    control_list.append(new_name)
+
+#%% remove nii.gz from df_24h_3d index
+# df.index = df.index.str.replace(".nii.gz", "")
+df_24h_3d.index = df_24h_3d.index.str.replace(".nii.gz", "")
+df = df_24h_3d
+
+#%%
+w1_index_list
+
+#%% #%%
+dict = {}
+for i in df_24h_3d.index:
+    print(i)
+    str = i
+    #if str is in index_list, add to dict
+    if str in w1_index_list:
+        dict[i] = df_24h_3d.loc[i]
+
+#%% dict to df
+df_24h = pd.DataFrame.from_dict(dict, orient='index')
+
+#%% save to csv
+df_24h.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/24h_3d.csv")
+
+#%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df = df_24h
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in df.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(df.loc[i])
+    else:
+        df_control = df_control.append(df.loc[i])
+
+#%% save to csv
+# data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat")
+df_therapy.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/24h_3d_therapy.csv")
+df_control.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/24h_3d_control.csv")
+
+#%% % 24h 1w gt
+dict_24h_1w = {}
+segmentation_path = data_path / "result_3d"
+gt_path = data_path / "testing/1w/labelsTs"
+
+#%%
+calc_stats(gt_path, segmentation_path, dict_24h_1w)
+
+#%% dict to df
+df_24h_1w = pd.DataFrame.from_dict(dict_24h_1w, orient='index')
+
+print(np.mean(df_24h_1w['tversky']))
+# print(np.mean(df_24h_1w['dice']))
+
+#%% remove the raw with 0 in tversky in df_24h_1w
+df_610 = df_24h_1w
+df_610 = df_610[df_610['tversky'] != 0]
+
+#%% get df_24h_1w index as a list
+w1_index_list = df_610.index.tolist()
+
+#%% save to csv
+df_610.to_csv(str(data_path) + "/24h_1w_gt.csv")
+
+
+#%% remove nii.gz from df_24h_1w index
+df_610.index = df_610.index.str.replace(".nii.gz", "")
+df = df_610
+
+
+#%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in df.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(df.loc[i])
+    else:
+        df_control = df_control.append(df.loc[i])
+
+#%% save to csv
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat")
+df_therapy.to_csv(str(data_path) + "/therapy_24h_1w_gt_final.csv")
+df_control.to_csv(str(data_path) + "/control_24h_1w_gt_final.csv")
+
+
+
+
+
+
+#%% gmm 610
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h")
+
+
+#%% gmmm 24h
+segmentation_path = data_path / "result"
+gt_path = data_path / "labelsTs"
+
+#%%
+dict_24h_gmm = {}
+calc_stats(gt_path, segmentation_path, dict_24h_gmm)
+
+#%% dict to df
+df_24h_gmm = pd.DataFrame.from_dict(dict_24h_gmm, orient='index')
+
+# mean tversky
+print(np.mean(df_24h_gmm['tversky']))
+#%%
+# df_24h_gmm.to_csv(str(data_path) + "/24h_gmm.csv")
+
+
+#%% remove the .nii.gz from df_24h_gmm index
+df_24h_gmm.index = df_24h_gmm.index.str.replace(".nii.gz", "")
+
+#%%
+dict = {}
+for i in df_24h_gmm.index:
+    print(i)
+    str = i
+    #if str is in index_list, add to dict
+    if str in w1_index_list:
+        dict[i] = df_24h_gmm.loc[i]
+
+#%% dict to df
+df_24h_gmm_3d = pd.DataFrame.from_dict(dict, orient='index')
+
+#%% save to csv
+df_24h_gmm_3d.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/gmm_24h.csv")
+
+#%% control list
+data_path = Path("../../../Documents/data/adrian_data/devided/Rats24h/control")
+control_list = []
+for i in data_path.glob("*"):
+    print(i.name)
+    new_name = i.name.split("-")[0]
+    print(new_name)
+    #add new name to list
+    control_list.append(new_name)
+
+#%% remove nii.gz from  index
+# df_24h_gmm_3d.index = df_24h_gmm_3d.index.str.replace(".nii.gz", "")
+df = df_24h_gmm_3d
+
+#%%  mean tversky
+print(np.mean(df['tversky']))
+# median tversky
+print(np.median(df['tversky']))
+
+#%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in df.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(df.loc[i])
+    else:
+        df_control = df_control.append(df.loc[i])
+
+#%% save to csv
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h")
+df_therapy.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/therapy_24h_gmm.csv")
+df_control.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/control_24h_gmm.csv")
+
+
+#%% % 24h 1w gt
+dict_24h_1w = {}
+segmentation_path = data_path / "result"
+gt_path = data_path / "1w_labels"
+
+#%%
+calc_stats(gt_path, segmentation_path, dict_24h_1w)
+
+#%% dict to df
+df_24h_1w = pd.DataFrame.from_dict(dict_24h_1w, orient='index')
+
+print(np.mean(df_24h_1w['tversky']))
+# print(np.mean(df_24h_1w['dice']))
+
+#%% remove .nii.gz from index
+df_24h_1w.index = df_24h_1w.index.str.replace(".nii.gz", "")
+
+#%% save index as list
+index_list = df_610.index.tolist()
+
+#%% save to csv
+df_24h_1w.to_csv(str(data_path) + "/24h_1w_gt.csv")
+
+#%%
+dict = {}
+for i in df_24h_1w.index:
+    print(i)
+    str = i
+    #if str is in index_list, add to dict
+    if str in w1_index_list:
+        dict[i] = df_24h_1w.loc[i]
+
+#%% dict to df
+df_24h_1w_3d = pd.DataFrame.from_dict(dict, orient='index')
+
+# #%% remove the raw with 0 in tversky in df_24h_1w
+# df_610 = df_24h_1w
+# df_610 = df_610[df_610['tversky'] != 0]
+
+
+#%% save to csv
+df_24h_1w_3d.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/gmm_24h_1w.csv")
+
+#%%
+df = df_24h_1w_3d
+#%% if df index not in control_list then add it to df_therapy and if in control_list add to df_control
+df_therapy = pd.DataFrame()
+df_control = pd.DataFrame()
+
+for i in df.index:
+    if i not in control_list:
+        df_therapy = df_therapy.append(df.loc[i])
+    else:
+        df_control = df_control.append(df.loc[i])
+
+#%% save to csv
+df_therapy.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/therapy_24h_1w_gmm.csv")
+df_control.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/gmm_files/24h/control_24h_1w_gmm.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #%%
 # ------------------------------605---------------------------------#
@@ -276,6 +563,11 @@ calc_stats(gt_path, segmentation_path, dict_610_gt1w_gt24h)
 
 #%% dict to df and save to csv
 df = pd.DataFrame.from_dict(dict_610_gt1w_gt24h, orient='index')
+
+# mean tversky
+print(df["tversky"].mean())
+
+#%%
 df.to_csv(str(data_path) + "/610_gt1w_gt24h.csv")
 
 #%% control list
@@ -304,6 +596,7 @@ for i in df.index:
         df_control = df_control.append(df.loc[i])
 
 #%% save to csv
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/1w")
 df_therapy.to_csv(str(data_path) + "/therapy_gt1w_gt24h.csv")
 df_control.to_csv(str(data_path) + "/control_gt1w_gt14h.csv")
 
