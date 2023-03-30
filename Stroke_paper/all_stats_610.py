@@ -1,30 +1,90 @@
 #%%
-from utilities.confusion_matrix import calc_ConfusionMatrix
-from utilities.confusionMatrix_dependent_functions import *
-import numpy as np
-import shutil
 from pathlib import Path
 import pandas as pd
-import nibabel as nib
-import numpy as np
 from utilities.confusionMatrix_dependent_functions import *
-import os
 
 #%% 612
 data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task612_mcao60_gmmLabels")
+
+#%%
 rs_path = data_path
 dict_612 = {}
-segmentation_path = rs_path / "result"
+segmentation_path = rs_path / "result_3d"
 gt_path = rs_path / "testing/labelsTs"
 
 #%%
 calc_stats(gt_path, segmentation_path, dict_612)
+
+#%% compare gt and segmentation
+rs_path = data_path
+dict_612 = {}
+segmentation_path = rs_path / "result_3d"
+gt_path = rs_path / "labelsTs"
+
+#%%
+calc_stats(gt_path, segmentation_path, dict_612)
+
+#%% dict to df 612
+df_612 = pd.DataFrame.from_dict(dict_612, orient='index')
+
+# save to csv 612
+df_612.to_csv(str(rs_path / "612_gmm_labels_compare") + ".csv")
 
 #%% dict to df 650
 df_650 = pd.DataFrame.from_dict(dict_612, orient='index')
 
 # save to csv 650
 df_650.to_csv(str(rs_path / "612_gmm_gt_compare") + ".csv")
+
+#%% testing on other timepoints
+task_name = "testing_tp/72h"
+rs_path = data_path / task_name
+dict_612_72h = {}
+segmentation_path = rs_path / "result_3d"
+gt_path = rs_path / "labelsTs"
+
+#%%
+calc_stats(gt_path, segmentation_path, dict_612_72h)
+
+#%% dict to df 612_72h
+df_612_72h = pd.DataFrame.from_dict(dict_612_72h, orient='index')
+
+# save to csv 612_72h
+df_612_72h.to_csv(str(rs_path / "612_72h") + ".csv")
+
+#%% testing on other timepoints
+task_name = "testing_tp/1w"
+rs_path = data_path / task_name
+dict_612_1w = {}
+segmentation_path = rs_path / "result_3d"
+gt_path = rs_path / "labelsTs"
+
+calc_stats(gt_path, segmentation_path, dict_612_1w)
+
+#%% dict to df 612_1w
+df_612_1w = pd.DataFrame.from_dict(dict_612_1w, orient='index')
+
+# save to csv 612_1w
+df_612_1w.to_csv(str(rs_path / "612_1w") + ".csv")
+
+#%% testing on other timepoints
+task_name = "testing_tp/1m"
+rs_path = data_path / task_name
+dict_612_1m = {}
+segmentation_path = rs_path / "result_3d"
+gt_path = rs_path / "labelsTs"
+
+calc_stats(gt_path, segmentation_path, dict_612_1m)
+
+#%% dict to df 612_1m
+df_612_1m = pd.DataFrame.from_dict(dict_612_1m, orient='index')
+
+# save to csv 612_1m
+df_612_1m.to_csv(str(rs_path / "612_1m") + ".csv")
+
+#%% testing on other timepoints
+
+
 
 
 #%% mean and median tvwrsky print
@@ -392,10 +452,13 @@ df_control.to_csv("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing/g
 
 #%%
 # ------------------------------605---------------------------------#
-data_path = Path("../../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing")
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat/testing")
 data_72h = data_path / "72h"
 data_1w = data_path / "1w"
 data_1m = data_path / "1m"
+
+for i in data_path.glob("*"):
+    print(i.name)
 
 
 #%%
@@ -473,9 +536,25 @@ df_1m_3d = pd.DataFrame.from_dict(dict_1m_3d, orient='index')
 # save df to csv
 df_1m_3d.to_csv(str(data_1m) +"/3d_1m.csv")
 
+#%%
+data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task610_rat")
+data_24h = data_path
+
+#%% 24h seg 1w gt
+dict_24h_1w = {}
+segmentation_path = data_24h / "result_3d"
+ground_truth_path = data_24h / "testing/1w/labelsTs"
+
+calc_stats(ground_truth_path, segmentation_path, dict_24h_1w)
+
+#%% dict to df
+df_24h_1w = pd.DataFrame.from_dict(dict_24h_1w, orient='index')
+
+# save df to csv
+df_24h_1w.to_csv(str(data_24h) +"/24h_1w.csv")
 
 #%%
-data_path = Path("../../../../Documents/data/adrian_data/Data_Paper_12092022")
+data_path = Path("../../../Documents/data/adrian_data/Data_Paper_12092022")
 gmm_1w = data_path / "GMM/GMM_1w/Niftis"
 gmm_24h = data_path / "GMM/GMM_24h/Niftis"
 

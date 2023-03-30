@@ -3,11 +3,6 @@ from pathlib import Path
 import pandas as pd
 from utilities.confusionMatrix_dependent_functions import *
 
-
-#%% print current working directory
-import os
-print(os.getcwd())
-
 #%% 705
 
 data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data")
@@ -15,7 +10,7 @@ data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data")
 #%% 705
 rs_path = data_path / "Task705_sampling_threshold"
 dict_705 = {}
-segmentation_path = rs_path / "result"
+segmentation_path = rs_path / "result_3d"
 gt_path = rs_path / "labelsTs"
 
 for i in segmentation_path.glob("*.nii.gz"):
@@ -34,71 +29,11 @@ np.mean(df_705['tversky'])
 #%% save to csv 705
 df_705.to_csv(str(rs_path) + "/705_new.csv")
 
-
-#%% 706
-rs_path = data_path / "Task706_sampling_threshold"
-dict_706 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-#%%
-calc_stats(segmentation_path, gt_path, dict_706)
-
-#%% dict to df 706
-df_706 = pd.DataFrame.from_dict(dict_706, orient='index')
-
-#%% save to csv 706
-df_706.to_csv(str(rs_path) + "/706.csv")
-
-#%% 707
-rs_path = data_path / "Task707_sampling_threshold"
-dict_707 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-#%%
-calc_stats(segmentation_path, gt_path, dict_707)
-
-#%% dict to df 707
-df_707 = pd.DataFrame.from_dict(dict_707, orient='index')
-
-#%% save to csv 707
-df_707.to_csv(str(rs_path) + "/707.csv")
-
-#%% 708
-rs_path = data_path / "Task708_sampling_threshold"
-dict_708 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-#%%
-calc_stats(segmentation_path, gt_path, dict_708)
-
-#%% dict to df 708
-df_708 = pd.DataFrame.from_dict(dict_708, orient='index')
-
-#%% save to csv 708
-df_708.to_csv(str(rs_path) + "/708.csv")
-
-#%% 709
-rs_path = data_path / "Task709_sampling_threshold"
-dict_709 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-#%%
-calc_stats(segmentation_path, gt_path, dict_709)
-
-#%% dict to df 709
-df_709 = pd.DataFrame.from_dict(dict_709, orient='index')
-
-#%% save to csv 709
-df_709.to_csv(str(rs_path) + "/709.csv")
-
 #%% 710
 rs_path = data_path / "Task710_sampling_threshold"
 dict_710 = {}
-segmentation_path = rs_path / "result"
+
+segmentation_path = rs_path / "result_3d"
 gt_path = rs_path / "labelsTs"
 
 #%%
@@ -106,116 +41,90 @@ calc_stats(gt_path, segmentation_path, dict_710)
 
 #%% dict to df 710
 df_710 = pd.DataFrame.from_dict(dict_710, orient='index')
-#%% dice mean
+
+#%%  mean of df_705 dice
 np.mean(df_710['tversky'])
 
 #%% save to csv 710
 df_710.to_csv(str(rs_path) + "/710_new.csv")
 
-#%% 711
-rs_path = data_path / "Task711_sampling_threshold"
-dict_711 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(segmentation_path, gt_path, dict_711)
-
-#%% dict to df 711 & save to csv 711
-df_711 = pd.DataFrame.from_dict(dict_711, orient='index')
-
-df_711.to_csv(str(rs_path) + "/711.csv")
-
-#%% 712
-rs_path = data_path / "Task712_sampling_threshold"
-dict_712 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(segmentation_path, gt_path, dict_712)
-
-#%% dict to df 712 & save to csv 712
-df_712 = pd.DataFrame.from_dict(dict_712, orient='index')
-
-df_712.to_csv(str(rs_path) + "/712.csv")
-
-#%% 713
-rs_path = data_path / "Task713_sampling_threshold"
-dict_713 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(segmentation_path, gt_path, dict_713)
-
-#%% dict to df 713 & save to csv 713
-df_713 = pd.DataFrame.from_dict(dict_713, orient='index')
-
-#%%
-df_713.to_csv(str(rs_path) + "/713.csv")
-
-#%%
-np.mean(df_713['dice'])
-
-#%% 714
-rs_path = data_path / "Task714_sampling_threshold"
-dict_714 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(segmentation_path, gt_path, dict_714)
-
-#%% dict to df 714 & save to csv 714
-df_714 = pd.DataFrame.from_dict(dict_714, orient='index')
-
-df_714.to_csv(str(rs_path) + "/714.csv")
-
 #%% 715
 rs_path = data_path / "Task715_sampling_threshold"
 dict_715 = {}
-segmentation_path = rs_path / "result"
+segmentation_path = rs_path / "result_3d"
 gt_path = rs_path / "labelsTs"
 
+#%%
 calc_stats(gt_path, segmentation_path, dict_715)
 
-#%% dict to df 715 & save to csv 715
+#%% dict to df 715
 df_715 = pd.DataFrame.from_dict(dict_715, orient='index')
 
-#%%
+#%%  mean of df_705 dice
 np.mean(df_715['tversky'])
 
-#%%
+#%% save to csv 715
 df_715.to_csv(str(rs_path) + "/715_new.csv")
 
-#%% 716
-rs_path = data_path / "Task716_sampling_threshold"
-dict_716 = {}
-segmentation_path = rs_path / "result"
+
+#%% 720
+rs_path = data_path / "Task720_sampling_threshold"
+dict_720 = {}
+segmentation_path = rs_path / "result_3d"
 gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_716)
-
-#%% dict to df 716 & save to csv 716
-df_716 = pd.DataFrame.from_dict(dict_716, orient='index')
-
-df_716.to_csv(str(rs_path) + "/716.csv")
-
 #%%
-np.mean(df_716['dice'])
+calc_stats(gt_path, segmentation_path, dict_720)
 
-#%% 717
-rs_path = data_path / "Task717_sampling_threshold"
-dict_717 = {}
-segmentation_path = rs_path / "result"
+#%% dict to df 720
+df_720 = pd.DataFrame.from_dict(dict_720, orient='index')
+
+#%%  mean of df_705 dice
+np.mean(df_720['tversky'])
+
+#%% save to csv 720
+df_720.to_csv(str(rs_path) + "/720_new.csv")
+
+#%% 725
+rs_path = data_path / "Task725_sampling_threshold"
+dict_725 = {}
+segmentation_path = rs_path / "result_3d"
 gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_717)
-
-#%% dict to df 717 & save to csv 717
-df_717 = pd.DataFrame.from_dict(dict_717, orient='index')
-
-df_717.to_csv(str(rs_path) + "/717.csv")
-
 #%%
-np.mean(df_717['dice'])
+calc_stats(gt_path, segmentation_path, dict_725)
+
+#%% dict to df 725
+df_725 = pd.DataFrame.from_dict(dict_725, orient='index')
+
+#%%  mean of df_705 dice
+np.mean(df_725['tversky'])
+
+#%% save to csv 725
+df_725.to_csv(str(rs_path) + "/725_new.csv")
+
+
+#%% 705 to 725 mean tversky print
+print("705: ", np.mean(df_705['tversky']))
+print("710: ", np.mean(df_710['tversky']))
+print("715: ", np.mean(df_715['tversky']))
+print("720: ", np.mean(df_720['tversky']))
+print("725: ", np.mean(df_725['tversky']))
+
+#%% print mean dice 705 to 725
+print("705: ", np.mean(df_705['dice']))
+print("710: ", np.mean(df_710['dice']))
+print("715: ", np.mean(df_715['dice']))
+print("720: ", np.mean(df_720['dice']))
+print("725: ", np.mean(df_725['dice']))
+
+#%% median tversky 705 to 725
+print("705: ", np.median(df_705['tversky']))
+print("710: ", np.median(df_710['tversky']))
+print("715: ", np.median(df_715['tversky']))
+print("720: ", np.median(df_720['tversky']))
+print("725: ", np.median(df_725['tversky']))
+
 
 #%% 801
 rs_path = data_path / "Task801_control_training"
@@ -354,73 +263,7 @@ df_gmm_1m = pd.DataFrame.from_dict(dict_gmm_1m, orient='index')
 
 df_gmm_1m.to_csv(str(rs_path) + "/gmm_1m.csv")
 
-#%%
-dict_717 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
 
-calc_stats(segmentation_path, gt_path, dict_717)
-
-#%% dict to df 717 & save to csv 717
-df_717 = pd.DataFrame.from_dict(dict_717, orient='index')
-
-df_717.to_csv(str(rs_path) + "/717.csv")
-
-#%%
-np.mean(df_717['dice'])
-
-#%% 720
-rs_path = data_path / "Task720_sampling_threshold"
-dict_720 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(gt_path, segmentation_path, dict_720)
-
-#%% dict to df 720 & save to csv 720
-df_720 = pd.DataFrame.from_dict(dict_720, orient='index')
-
-# tversky mean
-np.mean(df_720['tversky'])
-#%%
-df_720.to_csv(str(rs_path) + "/720_new.csv")
-
-#%% 725
-rs_path = data_path / "Task725_sampling_threshold"
-dict_725 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(gt_path, segmentation_path, dict_725)
-
-#%% dict to df 725 & save to csv 725
-df_725 = pd.DataFrame.from_dict(dict_725, orient='index')
-
-# tversky mean
-np.mean(df_725['tversky'])
-
-#%%
-df_725.to_csv(str(rs_path) + "/725_new.csv")
-
-#%% prnt the mean of tversky for each task from 705 , 10, 15 , 20, 25
-print("705: " + str(np.mean(df_705['tversky'])))
-print("710: " + str(np.mean(df_710['tversky'])))
-print("715: " + str(np.mean(df_715['tversky'])))
-print("720: " + str(np.mean(df_720['tversky'])))
-print("725: " + str(np.mean(df_725['tversky'])))
-
-#%% 720
-rs_path = data_path / "Task720_sampling_threshold"
-dict_720 = {}
-segmentation_path = rs_path / "result"
-gt_path = rs_path / "labelsTs"
-
-calc_stats(segmentation_path, gt_path, dict_720)
-
-#%% dict to df 720 & save to csv 720
-df_720 = pd.DataFrame.from_dict(dict_720, orient='index')
-
-df_720.to_csv(str(rs_path) + "/720.csv")
 
 #%% 651_rat
 rs_path = data_path / "Task651_rat"
