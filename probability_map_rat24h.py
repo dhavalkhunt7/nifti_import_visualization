@@ -5,7 +5,6 @@ from pathlib import Path
 
 # %% pathlib import Path("../nnUNet_raw_data_base/nnUNet_raw_data")
 from matplotlib import pyplot as plt
-from torchvision.io.video import av
 
 database = Path("../nnUNet_raw_data_base/nnUNet_raw_data")
 
