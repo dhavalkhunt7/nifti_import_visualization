@@ -192,21 +192,30 @@ def create_mean_img_jpm(dict_final_data, jpm_img_path):
         seg_list.append(dict_final_data[i]["seg"])
         # check if there is nan values in the t2 data and if there is then replace them with 0 and add it to the list,
         # if not add to list directly
-        if np.isnan(dict_final_data[i]["t2"]).any():
-            dict_final_data[i]["t2"][np.isnan(dict_final_data[i]["t2"])] = 0
-            t2_list.append(dict_final_data[i]["t2"])
-        else:
-            t2_list.append(dict_final_data[i]["t2"])
-        gt_list.append(dict_final_data[i]["gt"])
+        # if dict_final_data has t2 data
+        if "t2" in dict_final_data[i].keys():
+            if np.isnan(dict_final_data[i]["t2"]).any():
+                dict_final_data[i]["t2"][np.isnan(dict_final_data[i]["t2"])] = 0
+                t2_list.append(dict_final_data[i]["t2"])
+            else:
+                t2_list.append(dict_final_data[i]["t2"])
+        # if dict_final_data has gt data
+        if "gt" in dict_final_data[i].keys():
+            gt_list.append(dict_final_data[i]["gt"])
     print("list created")
 
     print("saving final images for jpm")
     # save the final images
-    nib.save(nib.Nifti1Image(np.mean(t2_list, axis=0), np.eye(4)), jpm_img_path / "final_t2.nii.gz")
-    nib.save(nib.Nifti1Image(np.mean(gt_list, axis=0), np.eye(4)), jpm_img_path / "final_gt.nii.gz")
+    #if list exists
+    if len(t2_list) > 0:
+        nib.save(nib.Nifti1Image(np.mean(t2_list, axis=0), np.eye(4)), jpm_img_path / "final_t2.nii.gz")
+    if len(gt_list) > 0:
+        nib.save(nib.Nifti1Image(np.mean(gt_list, axis=0), np.eye(4)), jpm_img_path / "final_gt.nii.gz")
     nib.save(nib.Nifti1Image(np.mean(seg_list, axis=0), np.eye(4)), jpm_img_path / "final_seg.nii.gz")
 
-    print("final images saved in folder" + str(jpm_img_path))
+    # if final seg nii.gz exists in jpm_img_path then print the message
+    if (jpm_img_path / "final_seg.nii.gz").exists():
+        print("final images saved in folder" + str(jpm_img_path))
 
 
 # %% create a function plot subplots of the image and the masks
