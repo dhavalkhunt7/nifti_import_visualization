@@ -131,7 +131,7 @@ data_path = Path("../nnUNet_raw_data_base/nnUNet_raw_data/Task613_mcao60_spatGmm
 rs_path = data_path
 dict_613 = {}
 segmentation_path = rs_path / "result_3d"
-gt_path = rs_path / "testing/labelsTs"
+gt_path = rs_path / "labelsTs"
 
 #%%
 calc_stats(gt_path, segmentation_path, dict_613)
@@ -143,7 +143,7 @@ df_613 = pd.DataFrame.from_dict(dict_613, orient='index')
 df_613.index = df_613.index.str.replace(".nii.gz", "")
 
 #%% save to csv 613
-df_613.to_csv(str(rs_path / "613_gt_compare") + ".csv")
+df_613.to_csv(str(rs_path / "613_spatgt_compare") + ".csv")
 
 #%%  testing on other timepoints
 task_name = "testing_tp/72h"

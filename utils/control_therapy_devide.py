@@ -31,6 +31,9 @@ for i in control_data.glob("*"):
 print(len(list_therapy))
 print(len(list_control))
 
+
+
+
 # %%
 task_72h = database / "Rats72h"
 

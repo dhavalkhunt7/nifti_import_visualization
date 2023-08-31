@@ -34,16 +34,18 @@ if __name__ == '__main__':
     # this folder should have the training and testing subfolders
 
     # now start the conversion to nnU-Net:
-    task_name = 'Task502_BrainTumour'
+    task_name = 'Task991_BrainCancerClassification'
     target_base = join(Path("../nnUNet_raw_data_base/nnUNet_raw_data"), task_name)
     target_imagesTr = join(target_base, "imagesTr")
     target_imagesTs = join(target_base, "imagesTs")
 
     # finally we can call the utility for generating a dataset.json
     generate_dataset_json(join(target_base, 'dataset.json'), target_imagesTr, target_imagesTs,
-                          ('FLAIR', 'T1w', 't1gd', 'T2w'),
-                          labels={0: 'background', 1: 'edema', 2: 'non-enhancing tumor', 3: 'enhancing tumour'},
-                          dataset_name=task_name, license='CC-BY-SA 4.0')
+                          # ('FLAIR', 'T1w', 't1gd', 'T2w'),
+                          ('T1'),
+                          # labels={0: 'background', 1: 'edema', 2: 'non-enhancing tumor', 3: 'enhancing tumour'},
+                            labels={0: 'background', 1: 'meningioma', 2: 'glioma', 3: 'pituitary'  },
+                          dataset_name=task_name, license='')
 
     """
     once this is completed, you can use the dataset like any other nnU-Net dataset. Note that since this is a 2D
